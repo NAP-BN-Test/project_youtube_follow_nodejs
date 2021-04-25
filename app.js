@@ -23,7 +23,7 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }))
 app.use(bodyParser.json({ limit: '100mb' }))
 app.use(express.urlencoded({ extended: false }));
-const port = process.env.PORT || 3300
+const port = process.env.PORT || 5100
 server.listen(port, function () {
     console.log('http://localhost:' + port);
 });

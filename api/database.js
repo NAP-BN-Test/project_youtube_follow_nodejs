@@ -43,20 +43,20 @@ module.exports = {
         user: 'sa',
         password: 'Viet@solution$213%171^198',
         server: '103.154.100.26',
-        database: 'TXAGELESS_QLNB', // GELESS_QLNB con demo
+        database: 'FollowYoutube_DB', // GELESS_QLNB con demo
         options: {
             encrypt: false,
         },
     },
-    configDBCustomer: {
-        user: 'sa',
-        password: '1234',
-        server: 'localhost',
-        database: 'CustomerUser',
-        options: {
-            encrypt: false,
-        },
-    },
+    // configDBCustomer: {
+    //     user: 'sa',
+    //     password: '1234',
+    //     server: 'localhost',
+    //     database: 'CustomerUser',
+    //     options: {
+    //         encrypt: false,
+    //     },
+    // },
     connectDatabase: async function () {
         const db = new Sequelize(this.config.database, this.config.user, this.config.password, {
             host: this.config.server,

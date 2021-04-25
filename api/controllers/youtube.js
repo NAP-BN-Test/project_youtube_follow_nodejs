@@ -99,6 +99,7 @@ module.exports = {
         });
     },
     getListPlaylistFromChanel: async (req, res) => {
+        var body = res.body;
         var strURL = 'https://youtube.googleapis.com/youtube/v3/playlists?key=AIzaSyCwwxGuObftytgmOoogEoAyNC0TMZwnOKI'
         var strPart = '&part=snippet&maxResults=20'
         var strIDPlaylist = '&channelId=UCpd1Gf-SZjc_5ce5vVq5FTg'
@@ -131,7 +132,7 @@ module.exports = {
                 var array = [];
                 data.data.items.forEach(item => {
                     array.push({
-                        name: item.snippet.title,
+                        name: item.snippet,
                     })
                 })
                 // console.log(data);
@@ -165,7 +166,7 @@ module.exports = {
                 var array = [];
                 data.data.items.forEach(item => {
                     array.push({
-                        name: item.snippet.title,
+                        name: item,
                     })
                 })
                 // console.log(data);

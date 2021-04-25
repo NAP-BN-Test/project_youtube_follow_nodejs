@@ -90,7 +90,8 @@ module.exports = {
                         update.push({ key: 'Code', value: body.code });
                     if (body.name || body.name === '')
                         update.push({ key: 'Name', value: body.name });
-                    update.push({ key: 'CreateDate', value: now });
+                    // update.push({ key: 'CreateDate', value: now });
+                    update.push({ key: 'EditDate', value: now });
                     database.updateTable(update, mtblChanelManager(db), body.id).then(response => {
                         if (response == 1) {
                             res.json(Result.ACTION_SUCCESS);
@@ -212,10 +213,10 @@ module.exports = {
                             var obj = {
                                 stt: stt,
                                 id: Number(element.ID),
-                                name: data.Name ? data.Name : '',
-                                code: data.Code ? data.Code : '',
-                                editDate: data.EditDate ? data.EditDate : null,
-                                createDate: data.CreateDate ? data.CreateDate : null,
+                                name: element.Name ? element.Name : '',
+                                code: element.Code ? element.Code : '',
+                                editDate: element.EditDate ? element.EditDate : null,
+                                createDate: element.CreateDate ? element.CreateDate : null,
                             }
                             array.push(obj);
                             stt += 1;
