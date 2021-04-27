@@ -5,6 +5,7 @@ module.exports = function (app) {
     app.route('/get_list_video_from_chanel').post(youtube.getVideoFromChanel);
     app.route('/get_list_video_from_playlist').post(youtube.getVideoFromPlaylist);
     app.route('/get_list_playlist_from_chanel').post(youtube.getListPlaylistFromChanel);
+    app.route('/get_detail_video').post(youtube.getDetailVideo);
 
     var chanel = require('./controllers/ctl-tblChanelManager')
     app.route('/add_tbl_chanel_manager').post(chanel.addtblChanelManager);

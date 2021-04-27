@@ -3,6 +3,7 @@ const Op = require('sequelize').Op;
 const Result = require('../constants/result');
 var moment = require('moment');
 var mtblChanelManager = require('../tables/tblChanelManager')
+var ChanelManager = require('../controllers/youtube')
 var database = require('../database');
 async function deleteRelationshiptblChanelManager(db, listID) {
     await mtblChanelManager(db).destroy({
@@ -51,8 +52,9 @@ module.exports = {
         })
     },
     // add_tbl_chanel_manager
-    addtblChanelManager: (req, res) => {
+    addtblChanelManager: async (req, res) => {
         let body = req.body;
+        let detailChanel = await ChanelManager.getURLAvatarChanel(body.code)
         let now = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
         database.connectDatabase().then(async db => {
             if (db) {
@@ -62,6 +64,7 @@ module.exports = {
                         Name: body.name ? body.name : '',
                         CreateDate: now,
                         EditDate: now,
+                        Link: detailChanel ? detailChanel : ''
                     }).then(data => {
                         var result = {
                             status: Constant.STATUS.SUCCESS,
@@ -131,8 +134,10 @@ module.exports = {
         })
     },
     // get_list_tbl_chanel_manager
-    getListtblChanelManager: (req, res) => {
+    getListtblChanelManager: async (req, res) => {
         let body = req.body;
+        // let detailVideo = await ChanelManager.getDetailVideo(body.videoID)
+        // console.log(detailVideo);
         database.connectDatabase().then(async db => {
             if (db) {
                 try {

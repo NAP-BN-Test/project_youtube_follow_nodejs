@@ -7,6 +7,8 @@ var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
 var TOKEN_PATH = TOKEN_DIR + 'youtube-nodejs-quickstart.json';
 const axios = require('axios');
+const Result = require('../constants/result');
+const Constant = require('../constants/constant');
 
 function getNewToken(oauth2Client, callback) {
     var authUrl = oauth2Client.generateAuthUrl({
@@ -62,7 +64,29 @@ var ypi = require('youtube-channel-videos');
 const getYoutubeChannelId = require('get-youtube-channel-id');
 
 const passport = require('passport')
+async function getURLAvatarChanel(chanelID) {
+    let result = ''
+    var strUrl = 'https://youtube.googleapis.com/youtube/v3/channels?part=snippet&key=AIzaSyCwwxGuObftytgmOoogEoAyNC0TMZwnOKI&id='
+    await axios.get(strUrl + chanelID).then(data => {
+        if (data) {
+            result = data.data.items[0].snippet.thumbnails.default.url
+        }
+    })
+    return result
+}
+async function getDetailVideo(videoID) {
+    let result = {}
+    var strUrl = 'https://youtube.googleapis.com/youtube/v3/videos?part=snippet&maxResults=20&key=AIzaSyCwwxGuObftytgmOoogEoAyNC0TMZwnOKI&id='
+    await axios.get(strUrl + videoID).then(data => {
+        if (data) {
+            result = data.data.items[0]
+        }
+    })
+    return result
+}
 module.exports = {
+    getDetailVideo,
+    getURLAvatarChanel,
     youtube: (res, req) => {
         var google = require('googleapis');
         var OAuth2 = google.auth.OAuth2;
@@ -124,6 +148,7 @@ module.exports = {
         })
     },
     getVideoFromPlaylist: async (req, res) => {
+        var body = req.body;
         var strURL = 'https://youtube.googleapis.com/youtube/v3/playlistItems?key=AIzaSyCwwxGuObftytgmOoogEoAyNC0TMZwnOKI'
         var strPart = '&part=snippet&maxResults=20'
         var strIDPlaylist = '&playlistId=PLzXDRSq8o2GNnjHqr3z6P1LRFGw3RY0fB'
@@ -155,9 +180,9 @@ module.exports = {
     // q=Preyta& tìm kiếm theo key
     //  https://www.googleapis.com/youtube/v3/search?key=AIzaSyCwwxGuObftytgmOoogEoAyNC0TMZwnOKI&channelId=UCpd1Gf-SZjc_5ce5vVq5FTg&part=snippet,id&order=date&maxResults=10&q=Preyta&list=PLzXDRSq8o2GNnjHqr3z6P1LRFGw3RY0fB&type=video&pageToken=CAIQAA
     getVideoFromChanel: async (req, res) => {
-        var body = res.body;
+        var body = req.body;
         var stringURL = 'https://www.googleapis.com/youtube/v3/search?key=AIzaSyCwwxGuObftytgmOoogEoAyNC0TMZwnOKI'
-        var stringIDChanel = '&channelId=UCpd1Gf-SZjc_5ce5vVq5FTg'
+        var stringIDChanel = '&channelId=' + body.chanelID
         var strPart = '&part=snippet,id&order=date'
         var maxResults = '&maxResults=10&type=video'
         var pageToken = '&pageToken=CAIQAA'
@@ -181,4 +206,22 @@ module.exports = {
             }
         })
     },
+    getDetailVideo: async (req, res) => {
+        var body = req.body;
+        let results = await getDetailVideo(body.videoID)
+        if (results) {
+            var result = {
+                result: results,
+                status: Constant.STATUS.SUCCESS,
+                message: ''
+            }
+            res.json(result);
+        } else {
+            var result = {
+                status: Constant.STATUS.FAIL,
+                message: 'Video không tồn tại !'
+            }
+            res.json(result);
+        }
+    }
 }
