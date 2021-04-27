@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 
-module.exports = function(db) {
+module.exports = function (db) {
     var table = db.define('tblChanelManager', {
         ID: {
             type: Sequelize.BIGINT,
@@ -10,7 +10,8 @@ module.exports = function(db) {
         Name: Sequelize.STRING,
         Code: Sequelize.STRING,
         CreateDate: Sequelize.DATE,
-        EditDate: Sequelize.DATE
+        EditDate: Sequelize.DATE,
+        Link: Sequelize.STRING,
 
     });
 

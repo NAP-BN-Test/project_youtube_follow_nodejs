@@ -217,6 +217,7 @@ module.exports = {
                                 code: element.Code ? element.Code : '',
                                 editDate: element.EditDate ? element.EditDate : null,
                                 createDate: element.CreateDate ? element.CreateDate : null,
+                                link: element.Link ? element.Link : null,
                             }
                             array.push(obj);
                             stt += 1;
