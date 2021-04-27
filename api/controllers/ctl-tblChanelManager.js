@@ -54,7 +54,7 @@ module.exports = {
     // add_tbl_chanel_manager
     addtblChanelManager: async (req, res) => {
         let body = req.body;
-        let detailChanel = await ChanelManager.getURLAvatarChanel(body.code)
+        // let detailChanel = await ChanelManager.getURLAvatarChanel(body.code)
         let now = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
         database.connectDatabase().then(async db => {
             if (db) {
@@ -64,7 +64,7 @@ module.exports = {
                         Name: body.name ? body.name : '',
                         CreateDate: now,
                         EditDate: now,
-                        Link: detailChanel ? detailChanel : ''
+                        // Link: detailChanel ? detailChanel : ''
                     }).then(data => {
                         var result = {
                             status: Constant.STATUS.SUCCESS,
@@ -136,8 +136,6 @@ module.exports = {
     // get_list_tbl_chanel_manager
     getListtblChanelManager: async (req, res) => {
         let body = req.body;
-        // let detailVideo = await ChanelManager.getDetailVideo(body.videoID)
-        // console.log(detailVideo);
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
@@ -214,19 +212,11 @@ module.exports = {
                         ],
                     }).then(async data => {
                         var array = [];
-                        data.forEach(element => {
-                            var obj = {
-                                stt: stt,
-                                id: Number(element.ID),
-                                name: element.Name ? element.Name : '',
-                                code: element.Code ? element.Code : '',
-                                editDate: element.EditDate ? element.EditDate : null,
-                                createDate: element.CreateDate ? element.CreateDate : null,
-                                link: element.Link ? element.Link : null,
-                            }
-                            array.push(obj);
-                            stt += 1;
-                        });
+                        for (var i = 0; i < data.length; i++) {
+                            let detailChanel = await ChanelManager.getDetailChanel(data[i].Code)
+                            detailChanel['id'] = data[i].ID;
+                            array.push(detailChanel)
+                        }
                         var count = await mtblChanelManager(db).count({ where: whereOjb, })
                         var result = {
                             array: array,

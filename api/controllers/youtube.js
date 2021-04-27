@@ -64,15 +64,20 @@ var ypi = require('youtube-channel-videos');
 const getYoutubeChannelId = require('get-youtube-channel-id');
 
 const passport = require('passport')
-async function getURLAvatarChanel(chanelID) {
-    let result = ''
+async function getDetailChanel(chanelID) {
+    let obj = {}
     var strUrl = 'https://youtube.googleapis.com/youtube/v3/channels?part=snippet&key=AIzaSyCwwxGuObftytgmOoogEoAyNC0TMZwnOKI&id='
     await axios.get(strUrl + chanelID).then(data => {
         if (data) {
-            result = data.data.items[0].snippet.thumbnails.default.url
+            if (data.data.items.length > 0) {
+                obj['channelTitle'] = data.data.items[0].snippet.title;
+                obj['channelId'] = chanelID;
+                obj['description'] = data.data.items[0].snippet.description;
+                obj['uriImg'] = data.data.items[0].snippet.thumbnails.default.url;
+            }
         }
     })
-    return result
+    return obj
 }
 async function getDetailVideo(videoID) {
     let result = {}
@@ -86,7 +91,7 @@ async function getDetailVideo(videoID) {
 }
 module.exports = {
     getDetailVideo,
-    getURLAvatarChanel,
+    getDetailChanel,
     youtube: (res, req) => {
         var google = require('googleapis');
         var OAuth2 = google.auth.OAuth2;
