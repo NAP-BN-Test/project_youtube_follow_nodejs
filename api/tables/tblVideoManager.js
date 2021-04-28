@@ -16,8 +16,11 @@ module.exports = function (db) {
         Type: Sequelize.STRING,
         Status: Sequelize.STRING,
         Duration: Sequelize.FLOAT,
-        IDChanel: Sequelize.BIGINT,
-        VideoID: Sequelize.INTEGER,
+        ChanelID: Sequelize.STRING,
+        VideoID: Sequelize.STRING,
+        PlayListID: Sequelize.STRING,
+        Description: Sequelize.STRING,
+        LinkImage: Sequelize.STRING,
     });
 
     return table;
