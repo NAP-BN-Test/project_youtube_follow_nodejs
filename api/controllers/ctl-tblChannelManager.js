@@ -2,11 +2,11 @@ const Constant = require('../constants/constant');
 const Op = require('sequelize').Op;
 const Result = require('../constants/result');
 var moment = require('moment');
-var mtblChanelManager = require('../tables/tblChanelManager')
-var ChanelManager = require('../controllers/youtube')
+var mtblchannelManager = require('../tables/tblchannelManager')
+var yotube = require('./youtube')
 var database = require('../database');
-async function deleteRelationshiptblChanelManager(db, listID) {
-    await mtblChanelManager(db).destroy({
+async function deleteRelationshiptblchannelManager(db, listID) {
+    await mtblchannelManager(db).destroy({
         where: {
             ID: {
                 [Op.in]: listID
@@ -15,14 +15,14 @@ async function deleteRelationshiptblChanelManager(db, listID) {
     })
 }
 module.exports = {
-    deleteRelationshiptblChanelManager,
-    //  get_detail_tbl_chanel_manager
-    detailtblChanelManager: (req, res) => {
+    deleteRelationshiptblchannelManager,
+    //  get_detail_tbl_channel_manager
+    detailtblchannelManager: (req, res) => {
         let body = req.body;
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
-                    mtblChanelManager(db).findOne({ where: { ID: body.id } }).then(data => {
+                    mtblchannelManager(db).findOne({ where: { ID: body.id } }).then(data => {
                         if (data) {
                             var obj = {
                                 id: data.ID,
@@ -51,20 +51,20 @@ module.exports = {
             }
         })
     },
-    // add_tbl_chanel_manager
-    addtblChanelManager: async (req, res) => {
+    // add_tbl_channel_manager
+    addtblchannelManager: async (req, res) => {
         let body = req.body;
-        // let detailChanel = await ChanelManager.getURLAvatarChanel(body.code)
+        // let detailchannel = await channelManager.getURLAvatarchannel(body.code)
         let now = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
-                    mtblChanelManager(db).create({
+                    mtblchannelManager(db).create({
                         Code: body.code ? body.code : '',
                         Name: body.name ? body.name : '',
                         CreateDate: now,
                         EditDate: now,
-                        // Link: detailChanel ? detailChanel : ''
+                        // Link: detailchannel ? detailchannel : ''
                     }).then(data => {
                         var result = {
                             status: Constant.STATUS.SUCCESS,
@@ -81,8 +81,8 @@ module.exports = {
             }
         })
     },
-    // update_tbl_chanel_manager
-    updatetblChanelManager: (req, res) => {
+    // update_tbl_channel_manager
+    updatetblchannelManager: (req, res) => {
         let body = req.body;
         database.connectDatabase().then(async db => {
             if (db) {
@@ -95,7 +95,7 @@ module.exports = {
                         update.push({ key: 'Name', value: body.name });
                     // update.push({ key: 'CreateDate', value: now });
                     update.push({ key: 'EditDate', value: now });
-                    database.updateTable(update, mtblChanelManager(db), body.id).then(response => {
+                    database.updateTable(update, mtblchannelManager(db), body.id).then(response => {
                         if (response == 1) {
                             res.json(Result.ACTION_SUCCESS);
                         } else {
@@ -111,14 +111,14 @@ module.exports = {
             }
         })
     },
-    // delete_tbl_chanel_manager
-    deletetblChanelManager: (req, res) => {
+    // delete_tbl_channel_manager
+    deletetblchannelManager: (req, res) => {
         let body = req.body;
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
                     let listID = JSON.parse(body.listID);
-                    await deleteRelationshiptblChanelManager(db, listID);
+                    await deleteRelationshiptblchannelManager(db, listID);
                     var result = {
                         status: Constant.STATUS.SUCCESS,
                         message: Constant.MESSAGE.ACTION_SUCCESS,
@@ -133,8 +133,8 @@ module.exports = {
             }
         })
     },
-    // get_list_tbl_chanel_manager
-    getListtblChanelManager: async (req, res) => {
+    // get_list_tbl_channel_manager
+    getListtblchannelManager: async (req, res) => {
         let body = req.body;
         database.connectDatabase().then(async db => {
             if (db) {
@@ -203,7 +203,7 @@ module.exports = {
                     //     }
                     // }
                     let stt = 1;
-                    mtblChanelManager(db).findAll({
+                    mtblchannelManager(db).findAll({
                         offset: Number(body.itemPerPage) * (Number(body.page) - 1),
                         limit: Number(body.itemPerPage),
                         where: whereOjb,
@@ -213,11 +213,11 @@ module.exports = {
                     }).then(async data => {
                         var array = [];
                         for (var i = 0; i < data.length; i++) {
-                            let detailChanel = await ChanelManager.getDetailChanel(data[i].Code)
-                            detailChanel['id'] = data[i].ID;
-                            array.push(detailChanel)
+                            let detailchannel = await yotube.getDetailChannel(data[i].Code)
+                            detailchannel['id'] = data[i].ID;
+                            array.push(detailchannel)
                         }
-                        var count = await mtblChanelManager(db).count({ where: whereOjb, })
+                        var count = await mtblchannelManager(db).count({ where: whereOjb, })
                         var result = {
                             array: array,
                             status: Constant.STATUS.SUCCESS,
@@ -236,13 +236,13 @@ module.exports = {
             }
         })
     },
-    // get_list_name_tbl_chanel_manager
-    getListNametblChanelManager: (req, res) => {
+    // get_list_name_tbl_channel_manager
+    getListNametblchannelManager: (req, res) => {
         let body = req.body;
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
-                    mtblChanelManager(db).findAll().then(data => {
+                    mtblchannelManager(db).findAll().then(data => {
                         var array = [];
                         data.forEach(element => {
                             var obj = {

@@ -16,7 +16,7 @@ module.exports = function (db) {
         Type: Sequelize.STRING,
         Status: Sequelize.STRING,
         Duration: Sequelize.FLOAT,
-        ChanelID: Sequelize.STRING,
+        channelID: Sequelize.STRING,
         VideoID: Sequelize.STRING,
         PlayListID: Sequelize.STRING,
         Description: Sequelize.STRING,

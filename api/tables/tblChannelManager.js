@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
 module.exports = function (db) {
-    var table = db.define('tblChanelManager', {
+    var table = db.define('tblchannelManager', {
         ID: {
             type: Sequelize.BIGINT,
             primaryKey: true,

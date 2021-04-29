@@ -63,7 +63,7 @@ const api = new YoutubeDataAPI(API_KEY);
 var search = require('youtube-search');
 var ypi = require('youtube-channel-videos');
 const getYoutubeChannelId = require('get-youtube-channel-id');
-var mtblChanelManager = require('../tables/tblChanelManager')
+var mtblchannelManager = require('../tables/tblchannelManager')
 var mtblVideoManager = require('../tables/tblVideoManager')
 var database = require('../database');
 
@@ -76,6 +76,7 @@ async function checkAPIKeyAndChangeKey() {
         'AIzaSyA_rmVM2ygTAbkuNdTRyQcl8ScBxFAjyug',
         'AIzaSyAix0vFZCvdxiRMzDyxpQli8daHHD_kraA',
         'AIzaSyBr46euUD9-e41U0-D3PDGKSsi4MFznxSg',
+        'AIzaSyDHMitbSmTTW2xVUbHiVz-TekY23fPv_k0',
     ]
     keyResult = 'AIzaSyDVzAJA0AuX-wpXBD_dp7POoMu0Bh4cSik'
     for (var key = 0; key < arrayKey.length; key++) {
@@ -94,15 +95,15 @@ async function checkAPIKeyAndChangeKey() {
     }
     return keyResult
 }
-async function getDetailChanel(chanelID) {
+async function getDetailChannel(channelID) {
     let obj = {}
     keyApiYoutube = await checkAPIKeyAndChangeKey()
     var strUrl = 'https://youtube.googleapis.com/youtube/v3/channels?part=snippet&key=' + keyApiYoutube + '&id='
-    await axios.get(strUrl + chanelID).then(data => {
+    await axios.get(strUrl + channelID).then(data => {
         if (data) {
             if (data.data.items.length > 0) {
                 obj['channelTitle'] = data.data.items[0].snippet.title;
-                obj['channelId'] = chanelID;
+                obj['channelId'] = channelID;
                 obj['description'] = data.data.items[0].snippet.description;
                 obj['uriImg'] = data.data.items[0].snippet.thumbnails.default.url;
             }
@@ -150,7 +151,7 @@ async function getDetailTBLVideoManager(videoID, playlistID) {
                     type: detailVideoManager.Type ? detailVideoManager.Type : '',
                     status: detailVideoManager.Status ? detailVideoManager.Status : '',
                     duration: detailVideoManager.Duration ? detailVideoManager.Duration : null,
-                    chanelID: detailVideoManager.ChanelID ? detailVideoManager.ChanelID : null,
+                    channelID: detailVideoManager.channelID ? detailVideoManager.channelID : null,
                     videoID: detailVideoManager.VideoID ? detailVideoManager.VideoID : null,
                     playListID: detailVideoManager.PlayListID ? detailVideoManager.PlayListID : null,
                     title: detailVideoManager.Title ? detailVideoManager.Title : '',
@@ -260,7 +261,7 @@ async function removeDiacritics(str) {
 }
 module.exports = {
     getDetailVideo,
-    getDetailChanel,
+    getDetailChannel,
     youtube: (res, req) => {
         var google = require('googleapis');
         var OAuth2 = google.auth.OAuth2;
@@ -296,19 +297,30 @@ module.exports = {
             }
         });
     },
-    getListPlaylistFromChanel: async (req, res) => {
-        var body = res.body;
+    getListPlaylistFromchannel: async (req, res) => {
+        var body = req.body;
+        console.log(body);
         keyApiYoutube = await checkAPIKeyAndChangeKey()
         var strURL = 'https://youtube.googleapis.com/youtube/v3/playlists?key=' + keyApiYoutube
         var strPart = '&part=snippet&maxResults=20'
-        var strIDPlaylist = '&channelId=UCpd1Gf-SZjc_5ce5vVq5FTg'
-        await axios.get(strURL + strPart + strIDPlaylist).then(data => {
+        var strIDPlaylist = '&channelId=' + body.channelID
+        console.log(strURL + strPart + strIDPlaylist);
+        await axios.get(strURL + strPart + strIDPlaylist).then(async data => {
             if (data) {
                 var array = [];
-                data.data.items.forEach(item => {
-                    array.push({
-                        name: item.snippet,
+                for (let playlist = 0; playlist < data.data.items.length; playlist++) {
+                    let countVideo = 0;
+                    await axios.get('https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,id&order=date&maxResults=2&type=video&playlistId=' + data.data.items[playlist].id + '&key=' + keyApiYoutube).then(data => {
+                        countVideo = data.data.pageInfo.totalResults
                     })
+                    array.push({
+                        name: data.data.items[playlist].snippet,
+                        id: data.data.items[playlist].id,
+                        countVideo: countVideo,
+                    })
+                }
+                data.data.items.forEach(item => {
+
                 })
                 // console.log(data);
                 var result = {
@@ -324,44 +336,12 @@ module.exports = {
     },
     getVideoFromPlaylist: async (req, res) => {
         var body = req.body;
-        keyApiYoutube = await checkAPIKeyAndChangeKey()
-        var strURL = 'https://youtube.googleapis.com/youtube/v3/playlistItems?key=' + keyApiYoutube
-        var strPart = '&part=snippet&maxResults=20'
-        var strIDPlaylist = '&playlistId=PLzXDRSq8o2GNnjHqr3z6P1LRFGw3RY0fB'
-        await axios.get(strURL + strPart + strIDPlaylist).then(data => {
-            if (data) {
-                var array = [];
-                data.data.items.forEach(item => {
-                    array.push({
-                        name: item.snippet,
-                    })
-                })
-                // console.log(data);
-                var result = {
-                    array: array,
-                    all: data.data.items.length
-                }
-                res.json(result);
-            }
-            else {
-                res.json(Result.SYS_ERROR_RESULT)
-            }
-        })
-    },
-    // &order=viewCount
-    // "nextPageToken": "CAIQAA", thay đổi vào pageToken=CAIQAA sẽ next trang
-    // "prevPageToken": "CAEQAQ",
-    // list=PLzXDRSq8o2GNnjHqr3z6P1LRFGw3RY0fB
-    // channelId=UCpd1Gf-SZjc_5ce5vVq5FTg tìm kiếm theo channel
-    // q=Preyta& tìm kiếm theo key
-    //  https://www.googleapis.com/youtube/v3/search?key=AIzaSyDVzAJA0AuX-wpXBD_dp7POoMu0Bh4cSik&channelId=UCpd1Gf-SZjc_5ce5vVq5FTg&part=snippet,id&order=date&maxResults=10&q=Preyta&list=PLzXDRSq8o2GNnjHqr3z6P1LRFGw3RY0fB&type=video&pageToken=CAIQAA
-    getVideoFromChanel: async (req, res) => {
-        let body = req.body;
+        console.log(body);
         keyApiYoutube = await checkAPIKeyAndChangeKey()
         await database.connectDatabase().then(async db => {
             if (db) {
-                var stringURL = 'https://www.googleapis.com/youtube/v3/search?key=' + keyApiYoutube
-                var stringIDChanel = '&channelId=' + body.chanelID
+                var stringURL = 'https://www.googleapis.com/youtube/v3/playlistItems?key=' + keyApiYoutube
+                var stringIDchannel = '&playlistId=' + body.playlistID
                 var strPart = '&part=snippet,id&order=date'
                 var maxResults = '&maxResults=10&type=video'
                 var pageToken = '&pageToken=' + (body.nextPageToken ? body.nextPageToken : 'CAoQAA')
@@ -379,8 +359,118 @@ module.exports = {
                 if (body.nextPageToken) {
                     search = ''
                 }
-                console.log(stringURL + stringIDChanel + strPart + maxResults + pageToken + search, 123);
-                await axios.get(stringURL + stringIDChanel + strPart + maxResults + pageToken + search).then(async data => {
+                console.log(stringURL + stringIDchannel + strPart + maxResults + search);
+                await axios.get(stringURL + stringIDchannel + strPart + maxResults + search).then(async data => {
+                    if (data) {
+                        var array = [];
+                        let prevPageToken = data.data.prevPageToken ? data.data.prevPageToken : '';
+                        let nextPageToken = data.data.nextPageToken ? data.data.nextPageToken : '';
+                        for (var detailVideo = 0; detailVideo < data.data.items.length; detailVideo++) {
+                            var objDetailVideo = {};
+                            let objWhere = {}
+                            if (data.data.items[detailVideo].id.videoId) {
+                                objWhere = {
+                                    VideoID: data.data.items[detailVideo].id.videoId
+                                }
+                            } else {
+                                objWhere = {
+                                    PlayListID: body.playlistID
+                                }
+                            }
+                            let chekVideoIDExist = await mtblVideoManager(db).findOne({
+                                where: objWhere
+                            })
+                            if (!chekVideoIDExist) {
+                                // console.log(data.data.items[detailVideo]);
+                                await mtblVideoManager(db).create({
+                                    Name: data.data.items[detailVideo].kind,
+                                    ViewVideo: 0,
+                                    Likes: 0,
+                                    CreateDate: data.data.items[detailVideo].publishTime ? data.data.items[detailVideo].publishTime : null,
+                                    EditDate: now,
+                                    Type: data.data.items[detailVideo].id.videoId ? 'Video' : 'Video',
+                                    Status: data.data.items[detailVideo].liveBroadcastContent,
+                                    Duration: 0,
+                                    IDchannel: data.data.items[detailVideo].snippet.channelId,
+                                    VideoID: data.data.items[detailVideo].snippet.resourceId.videoId,
+                                    PlaylistID: data.data.items[detailVideo].snippet.playlistId,
+                                    Title: data.data.items[detailVideo].snippet.title,
+                                    Description: data.data.items[detailVideo].snippet.description,
+                                    LinkImage: data.data.items[detailVideo].snippet.thumbnails.default ? data.data.items[detailVideo].snippet.thumbnails.default.url : null,
+                                })
+                                objDetailVideo = {
+                                    name: data.data.items[detailVideo].kind,
+                                    viewVideo: 0,
+                                    likes: 0,
+                                    createDate: data.data.items[detailVideo].publishTime ? data.data.items[detailVideo].publishTime : null,
+                                    editDate: now,
+                                    type: data.data.items[detailVideo].id.videoId ? 'Video' : 'Playlist',
+                                    status: data.data.items[detailVideo].liveBroadcastContent,
+                                    duration: 0,
+                                    channelID: data.data.items[detailVideo].snippet.channelId,
+                                    videoID: data.data.items[detailVideo].snippet.resourceId.videoId,
+                                    playlistID: data.data.items[detailVideo].snippet.playlistId,
+                                    title: data.data.items[detailVideo].snippet.title,
+                                    description: data.data.items[detailVideo].snippet.description,
+                                    linkImage: data.data.items[detailVideo].snippet.thumbnails.default ? data.data.items[detailVideo].snippet.thumbnails.default.url : null,
+                                }
+                            } else {
+                                objDetailVideo = await getDetailTBLVideoManager(data.data.items[detailVideo].id.videoId, data.data.items[detailVideo].id.playlistId)
+                            }
+                            array.push(objDetailVideo)
+                        }
+                        var result = {
+                            nextPageToken: nextPageToken,
+                            prevPageToken: prevPageToken,
+                            array: array,
+                            status: Constant.STATUS.SUCCESS,
+                            message: Constant.MESSAGE.ACTION_SUCCESS,
+                            all: data.data.items.length,
+                        }
+                        res.json(result);
+                    }
+                    else {
+                        res.json(Result.SYS_ERROR_RESULT)
+                    }
+                })
+            } else {
+                res.json(Constant.MESSAGE.USER_FAIL)
+            }
+        })
+    },
+    // &order=viewCount
+    // "nextPageToken": "CAIQAA", thay đổi vào pageToken=CAIQAA sẽ next trang
+    // "prevPageToken": "CAEQAQ",
+    // list=PLzXDRSq8o2GNnjHqr3z6P1LRFGw3RY0fB
+    // channelId=UCpd1Gf-SZjc_5ce5vVq5FTg tìm kiếm theo channel
+    // q=Preyta& tìm kiếm theo key
+    //  https://www.googleapis.com/youtube/v3/search?key=AIzaSyDVzAJA0AuX-wpXBD_dp7POoMu0Bh4cSik&channelId=UCpd1Gf-SZjc_5ce5vVq5FTg&part=snippet,id&order=date&maxResults=10&q=Preyta&list=PLzXDRSq8o2GNnjHqr3z6P1LRFGw3RY0fB&type=video&pageToken=CAIQAA
+    getVideoFromchannel: async (req, res) => {
+        let body = req.body;
+        keyApiYoutube = await checkAPIKeyAndChangeKey()
+        await database.connectDatabase().then(async db => {
+            if (db) {
+                var stringURL = 'https://www.googleapis.com/youtube/v3/search?key=' + keyApiYoutube
+                var stringIDchannel = '&channelId=' + body.channelID
+                var strPart = '&part=snippet,id&order=date'
+                var maxResults = '&maxResults=10&type=video'
+                var pageToken = '&pageToken=' + (body.nextPageToken ? body.nextPageToken : 'CAoQAA')
+                var search = '&q=' + await removeDiacritics((body.searchKey ? body.searchKey : ''))
+                let now = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
+                search = search.replace(/ /g, '%20')
+                search = search.replace(/[/]/g, '%2F')
+                search = search.replace(/[|]/g, '%7C')
+                if (body.searchKey && body.nextPageToken) {
+                    search = ''
+                }
+                if (body.searchKey) {
+                    pageToken = ''
+                }
+                if (body.nextPageToken) {
+                    search = ''
+                }
+                console.log(stringURL + stringIDchannel + strPart + maxResults + pageToken + search, 123);
+                await axios.get(stringURL + stringIDchannel + strPart + maxResults + pageToken + search).then(async data => {
                     if (data) {
                         var array = [];
                         let prevPageToken = data.data.prevPageToken ? data.data.prevPageToken : '';
@@ -410,7 +500,7 @@ module.exports = {
                                     Type: data.data.items[detailVideo].id.videoId ? 'Video' : 'Playlist',
                                     Status: data.data.items[detailVideo].liveBroadcastContent,
                                     Duration: 0,
-                                    IDChanel: data.data.items[detailVideo].snippet.channelId,
+                                    IDchannel: data.data.items[detailVideo].snippet.channelId,
                                     VideoID: data.data.items[detailVideo].id.videoId,
                                     PlayListID: data.data.items[detailVideo].id.playlistId,
                                     Title: data.data.items[detailVideo].snippet.title,
@@ -426,7 +516,7 @@ module.exports = {
                                     type: data.data.items[detailVideo].id.videoId ? 'Video' : 'Playlist',
                                     status: data.data.items[detailVideo].liveBroadcastContent,
                                     duration: 0,
-                                    chanelID: data.data.items[detailVideo].snippet.channelId,
+                                    channelID: data.data.items[detailVideo].snippet.channelId,
                                     videoID: data.data.items[detailVideo].id.videoId,
                                     playListID: data.data.items[detailVideo].id.playlistId,
                                     title: data.data.items[detailVideo].snippet.title,

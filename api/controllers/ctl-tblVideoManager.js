@@ -3,7 +3,7 @@ const Op = require('sequelize').Op;
 const Result = require('../constants/result');
 var moment = require('moment');
 var mtblVideoManager = require('../tables/tblVideoManager')
-var mtblChanelManager = require('../tables/tblChanelManager')
+var mtblchannelManager = require('../tables/tblchannelManager')
 
 var database = require('../database');
 async function deleteRelationshiptblVideoManager(db, listID) {
@@ -63,7 +63,7 @@ module.exports = {
                         Type: body.type ? body.type : '',
                         Status: body.status ? body.status : '',
                         Duration: body.duration ? body.duration : null,
-                        IDChanel: body.chanelID ? body.chanelID : null,
+                        IDchannel: body.channelID ? body.channelID : null,
                         VideoID: body.videoID ? body.videoID : null,
                     }).then(data => {
                         var result = {
@@ -122,11 +122,11 @@ module.exports = {
                         else
                             update.push({ key: 'Duration', value: body.duration });
                     }
-                    if (body.chanelID || body.chanelID === '') {
-                        if (body.chanelID === '')
-                            update.push({ key: 'IDchanel', value: null });
+                    if (body.channelID || body.channelID === '') {
+                        if (body.channelID === '')
+                            update.push({ key: 'IDchannel', value: null });
                         else
-                            update.push({ key: 'IDchanel', value: body.chanelID });
+                            update.push({ key: 'IDchannel', value: body.channelID });
                     }
                     if (body.type || body.type === '')
                         update.push({ key: 'Type', value: body.type });
@@ -216,7 +216,7 @@ module.exports = {
                     // }
                     let stt = 1;
                     let tblVideoManager = mtblVideoManager(db);
-                    tblVideoManager.belongsTo(mtblChanelManager(db), { foreignKey: 'IDChanel', sourceKey: 'IDChanel', as: 'chanel' })
+                    tblVideoManager.belongsTo(mtblchannelManager(db), { foreignKey: 'IDchannel', sourceKey: 'IDchannel', as: 'channel' })
                     tblVideoManager.findAll({
                         offset: Number(body.itemPerPage) * (Number(body.page) - 1),
                         limit: Number(body.itemPerPage),
@@ -226,9 +226,9 @@ module.exports = {
                         ],
                         include: [
                             {
-                                model: mtblChanelManager(db),
+                                model: mtblchannelManager(db),
                                 required: false,
-                                as: 'chanel'
+                                as: 'channel'
                             },
                         ],
                     }).then(async data => {
@@ -247,8 +247,8 @@ module.exports = {
                                 type: element.Type ? element.Type : '',
                                 status: element.Status ? element.Status : '',
                                 duration: element.Duration ? element.Duration : null,
-                                chanelID: element.IDChanel ? element.IDChanel : '',
-                                chanelName: element.chanel ? element.chanel.Name : '',
+                                channelID: element.IDchannel ? element.IDchannel : '',
+                                channelName: element.channel ? element.channel.Name : '',
                             }
                             array.push(obj);
                             stt += 1;
