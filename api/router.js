@@ -2,16 +2,16 @@ module.exports = function (app) {
     // var checkToken = require('./constants/token');
     var youtube = require('./controllers/youtube');
 
-    app.route('/get_list_video_from_chanel').post(youtube.getVideoFromChanel);
+    app.route('/get_list_video_from_channel').post(youtube.getVideoFromChanel);
     app.route('/get_list_video_from_playlist').post(youtube.getVideoFromPlaylist);
-    app.route('/get_list_playlist_from_chanel').post(youtube.getListPlaylistFromChanel);
-    app.route('/get_detail_video').post(youtube.getDetailVideo);
+    app.route('/get_list_playlist_from_channel').post(youtube.getListPlaylistFromChanel);
+    app.route('/get_detail_video').post(youtube.getDetailVideoManager);
 
     var chanel = require('./controllers/ctl-tblChanelManager')
-    app.route('/add_tbl_chanel_manager').post(chanel.addtblChanelManager);
-    app.route('/update_tbl_chanel_manager').post(chanel.updatetblChanelManager);
-    app.route('/delete_tbl_chanel_manager').post(chanel.deletetblChanelManager);
-    app.route('/get_list_tbl_chanel_manager').post(chanel.getListtblChanelManager);
+    app.route('/add_tbl_channel_manager').post(chanel.addtblChanelManager);
+    app.route('/update_tbl_channel_manager').post(chanel.updatetblChanelManager);
+    app.route('/delete_tbl_channel_manager').post(chanel.deletetblChanelManager);
+    app.route('/get_list_tbl_channel_manager').post(chanel.getListtblChanelManager);
 
     var accountManager = require('./controllers/ctl-tblAccount')
     app.route('/add_tbl_account').post(accountManager.addtblAccount);
