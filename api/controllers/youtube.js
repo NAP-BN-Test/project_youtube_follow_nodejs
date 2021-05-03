@@ -22,9 +22,9 @@ function getNewToken(oauth2Client, callback) {
         input: process.stdin,
         output: process.stdout
     });
-    rl.question('Enter the code from that page here: ', function(code) {
+    rl.question('Enter the code from that page here: ', function (code) {
         rl.close();
-        oauth2Client.getToken(code, function(err, token) {
+        oauth2Client.getToken(code, function (err, token) {
             if (err) {
                 console.log('Error while trying to retrieve access token', err);
                 return;
@@ -42,7 +42,7 @@ function getChannel(auth) {
         auth: auth,
         part: 'snippet,contentDetails,statistics',
         forUsername: 'GoogleDevelopers'
-    }, function(err, response) {
+    }, function (err, response) {
         if (err) {
             console.log('The API returned an error: ' + err);
             return;
@@ -72,29 +72,7 @@ var database = require('../database');
 const passport = require('passport')
 let keyApiYoutube = 'AIzaSyDVhyJWQ_jVRZ-MK-lpJdtUO-ihOEbPMSs'
 async function checkAPIKeyAndChangeKey() {
-    let arrayKey = [
-        'AIzaSyDVzAJA0AuX-wpXBD_dp7POoMu0Bh4cSik',
-        'AIzaSyDfzv9glyX533H9Vnvx21iE0yh057VdoVc',
-        'AIzaSyA_rmVM2ygTAbkuNdTRyQcl8ScBxFAjyug',
-        'AIzaSyAix0vFZCvdxiRMzDyxpQli8daHHD_kraA',
-        'AIzaSyBr46euUD9-e41U0-D3PDGKSsi4MFznxSg',
-        'AIzaSyDHMitbSmTTW2xVUbHiVz-TekY23fPv_k0',
-    ]
-    keyResult = 'AIzaSyDVzAJA0AuX-wpXBD_dp7POoMu0Bh4cSik'
-    for (var key = 0; key < arrayKey.length; key++) {
-        var strUrl = 'https://www.googleapis.com/youtube/v3/search?key=' + arrayKey[key] + '&channelId=UCswpuhr07BLpHpmt2vRa81A&part=snippet,id&order=date&maxResults=10&type=video&q=28%2F4'
-        try {
-            await axios.get(strUrl).then(data => {
-                if (data) {
-                    keyResult = arrayKey[key]
-                }
-            })
-            break
-        } catch (error) {
-            console.log(error + ' ');
-            continue
-        }
-    }
+    keyResult = 'AIzaSyBCmzVh-WiaNiXCoBLJe1WIm3C2SzZV5mE'
     return keyResult
 }
 async function getDetailChannel(channelID) {
@@ -278,7 +256,7 @@ module.exports = {
                     }
                 }
             }
-        }, function(err, data, response) {
+        }, function (err, data, response) {
             if (err) {
                 lien.end('Error: ' + err);
             } else if (data) {
@@ -289,7 +267,7 @@ module.exports = {
             }
         });
     },
-    getListPlaylistFromchannel: async(req, res) => {
+    getListPlaylistFromchannel: async (req, res) => {
         var body = req.body;
         console.log(body);
         keyApiYoutube = await checkAPIKeyAndChangeKey()
@@ -313,8 +291,8 @@ module.exports = {
                 }
                 data.data.items.forEach(item => {
 
-                    })
-                    // console.log(data);
+                })
+                // console.log(data);
                 var result = {
                     array: array,
                     all: data.data.items.length
@@ -325,7 +303,7 @@ module.exports = {
             }
         })
     },
-    getVideoFromPlaylist: async(req, res) => {
+    getVideoFromPlaylist: async (req, res) => {
         var body = req.body;
         console.log(body);
         keyApiYoutube = await checkAPIKeyAndChangeKey()
@@ -429,7 +407,7 @@ module.exports = {
     // channelId=UCpd1Gf-SZjc_5ce5vVq5FTg tìm kiếm theo channel
     // q=Preyta& tìm kiếm theo key
     //  https://www.googleapis.com/youtube/v3/search?key=AIzaSyDVzAJA0AuX-wpXBD_dp7POoMu0Bh4cSik&channelId=UCpd1Gf-SZjc_5ce5vVq5FTg&part=snippet,id&order=date&maxResults=10&q=Preyta&list=PLzXDRSq8o2GNnjHqr3z6P1LRFGw3RY0fB&type=video&pageToken=CAIQAA
-    getVideoFromchannel: async(req, res) => {
+    getVideoFromchannel: async (req, res) => {
         let body = req.body;
         keyApiYoutube = await checkAPIKeyAndChangeKey()
         await database.connectDatabase().then(async db => {
@@ -450,7 +428,7 @@ module.exports = {
                 if (body.searchKey) {
                     pageToken = ''
                 }
-                if (!body.searchKey) {
+                if (!body.searchKey || body.searchKey == '') {
                     search = ''
                 }
                 if (body.nextPageToken) {
@@ -533,7 +511,7 @@ module.exports = {
             }
         })
     },
-    getDetailVideoManager: async(req, res) => {
+    getDetailVideoManager: async (req, res) => {
         var body = req.body;
         let results = await getDetailVideo(body.videoID)
         if (results) {
