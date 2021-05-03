@@ -360,7 +360,7 @@ module.exports = {
                     search = ''
                 }
                 console.log(stringURL + stringIDchannel + strPart + maxResults + search);
-                await axios.get(stringURL + stringIDchannel + strPart + maxResults + search).then(async data => {
+                await axios.get(stringURL + stringIDchannel + strPart + maxResults).then(async data => {
                     if (data) {
                         var array = [];
                         let prevPageToken = data.data.prevPageToken ? data.data.prevPageToken : '';
@@ -465,6 +465,9 @@ module.exports = {
                 }
                 if (body.searchKey) {
                     pageToken = ''
+                }
+                if (!body.searchKey) {
+                    search = ''
                 }
                 if (body.nextPageToken) {
                     search = ''
