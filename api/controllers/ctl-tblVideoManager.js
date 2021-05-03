@@ -9,7 +9,9 @@ var database = require('../database');
 async function deleteRelationshiptblVideoManager(db, listID) {
     await mtblVideoManager(db).destroy({
         where: {
-            ID: { [Op.in]: listID }
+            ID: {
+                [Op.in]: listID
+            }
         }
     })
 }
@@ -224,13 +226,11 @@ module.exports = {
                         order: [
                             ['ID', 'DESC']
                         ],
-                        include: [
-                            {
-                                model: mtblchannelManager(db),
-                                required: false,
-                                as: 'channel'
-                            },
-                        ],
+                        include: [{
+                            model: mtblchannelManager(db),
+                            required: false,
+                            as: 'channel'
+                        }, ],
                     }).then(async data => {
                         var array = [];
                         data.forEach(element => {
@@ -303,5 +303,61 @@ module.exports = {
                 res.json(Constant.MESSAGE.USER_FAIL)
             }
         })
-    }
+    },
+    plusLikes: (req, res) => {
+        let body = req.body;
+
+        database.connectDatabase().then(async db => {
+            if (db) {
+                try {
+                    let likes = await mtblVideoManager(db).findOne({ where: { VideoID: body.videoID } })
+                    await mtblVideoManager(db).update({
+                        Likes: likes.Likes ? likes.Likes + 1 : 1,
+                    }, {
+                        where: {
+                            VideoID: body.videoID
+                        }
+                    })
+                    var result = {
+                        status: Constant.STATUS.SUCCESS,
+                        message: Constant.MESSAGE.ACTION_SUCCESS,
+                    }
+                    res.json(result);
+                } catch (error) {
+                    console.log(error);
+                    res.json(Result.SYS_ERROR_RESULT)
+                }
+            } else {
+                res.json(Constant.MESSAGE.USER_FAIL)
+            }
+        })
+    },
+    plusViews: (req, res) => {
+        let body = req.body;
+
+        database.connectDatabase().then(async db => {
+            if (db) {
+                try {
+                    let viewVideo = await mtblVideoManager(db).findOne({ where: { VideoID: body.videoID } })
+                    await mtblVideoManager(db).update({
+                        ViewVideo: viewVideo.ViewVideo ? viewVideo.ViewVideo + 1 : 1,
+                    }, {
+                        where: {
+                            VideoID: body.videoID
+                        }
+                    })
+                    var result = {
+                        status: Constant.STATUS.SUCCESS,
+                        message: Constant.MESSAGE.ACTION_SUCCESS,
+                    }
+                    res.json(result);
+                } catch (error) {
+                    console.log(error);
+                    res.json(Result.SYS_ERROR_RESULT)
+                }
+            } else {
+                res.json(Constant.MESSAGE.USER_FAIL)
+            }
+        })
+    },
 }

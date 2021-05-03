@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 
-module.exports = function (db) {
+module.exports = function(db) {
     var table = db.define('tblVideoManager', {
         ID: {
             type: Sequelize.BIGINT,
@@ -18,7 +18,7 @@ module.exports = function (db) {
         Duration: Sequelize.FLOAT,
         channelID: Sequelize.STRING,
         VideoID: Sequelize.STRING,
-        PlayListID: Sequelize.STRING,
+        PlaylistID: Sequelize.STRING,
         Description: Sequelize.STRING,
         LinkImage: Sequelize.STRING,
     });

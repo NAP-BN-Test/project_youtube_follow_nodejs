@@ -11,6 +11,7 @@ const Result = require('../constants/result');
 const Constant = require('../constants/constant');
 var moment = require('moment');
 const Op = require('sequelize').Op;
+
 function getNewToken(oauth2Client, callback) {
     var authUrl = oauth2Client.generateAuthUrl({
         access_type: 'offline',
@@ -21,9 +22,9 @@ function getNewToken(oauth2Client, callback) {
         input: process.stdin,
         output: process.stdout
     });
-    rl.question('Enter the code from that page here: ', function (code) {
+    rl.question('Enter the code from that page here: ', function(code) {
         rl.close();
-        oauth2Client.getToken(code, function (err, token) {
+        oauth2Client.getToken(code, function(err, token) {
             if (err) {
                 console.log('Error while trying to retrieve access token', err);
                 return;
@@ -34,13 +35,14 @@ function getNewToken(oauth2Client, callback) {
         });
     });
 }
+
 function getChannel(auth) {
     var service = google.youtube('v3');
     service.channels.list({
         auth: auth,
         part: 'snippet,contentDetails,statistics',
         forUsername: 'GoogleDevelopers'
-    }, function (err, response) {
+    }, function(err, response) {
         if (err) {
             console.log('The API returned an error: ' + err);
             return;
@@ -127,30 +129,21 @@ async function getDetailTBLVideoManager(videoID, playlistID) {
     let objResult = {}
     await database.connectDatabase().then(async db => {
         if (db) {
-            let objWhere = {}
-            if (videoID) {
-                objWhere = {
-                    VideoID: videoID
-                }
-            } else if (playlistID) {
-                objWhere = {
-                    PlayListID: playlistID
-                }
-            } else {
-                return {}
+            let objWhere = {
+                VideoID: videoID
             }
             await mtblVideoManager(db).findOne({
                 where: objWhere
             }).then(detailVideoManager => {
                 objResult = {
                     name: detailVideoManager.Name ? detailVideoManager.Name : '',
-                    viewVideo: detailVideoManager.ViewVideo ? detailVideoManager.ViewVideo : null,
-                    likes: detailVideoManager.Likes ? detailVideoManager.Likes : null,
+                    viewVideo: detailVideoManager.ViewVideo,
+                    likes: detailVideoManager.Likes,
                     createDate: detailVideoManager.CreateDate ? detailVideoManager.CreateDate : null,
                     editDate: detailVideoManager.EditDate ? detailVideoManager.EditDate : null,
                     type: detailVideoManager.Type ? detailVideoManager.Type : '',
                     status: detailVideoManager.Status ? detailVideoManager.Status : '',
-                    duration: detailVideoManager.Duration ? detailVideoManager.Duration : null,
+                    duration: detailVideoManager.Duration,
                     channelID: detailVideoManager.channelID ? detailVideoManager.channelID : null,
                     videoID: detailVideoManager.VideoID ? detailVideoManager.VideoID : null,
                     playListID: detailVideoManager.PlayListID ? detailVideoManager.PlayListID : null,
@@ -285,11 +278,10 @@ module.exports = {
                     }
                 }
             }
-        }, function (err, data, response) {
+        }, function(err, data, response) {
             if (err) {
                 lien.end('Error: ' + err);
-            }
-            else if (data) {
+            } else if (data) {
                 lien.end(data);
             }
             if (response) {
@@ -297,7 +289,7 @@ module.exports = {
             }
         });
     },
-    getListPlaylistFromchannel: async (req, res) => {
+    getListPlaylistFromchannel: async(req, res) => {
         var body = req.body;
         console.log(body);
         keyApiYoutube = await checkAPIKeyAndChangeKey()
@@ -321,20 +313,19 @@ module.exports = {
                 }
                 data.data.items.forEach(item => {
 
-                })
-                // console.log(data);
+                    })
+                    // console.log(data);
                 var result = {
                     array: array,
                     all: data.data.items.length
                 }
                 res.json(result);
-            }
-            else {
+            } else {
                 res.json(Result.SYS_ERROR_RESULT)
             }
         })
     },
-    getVideoFromPlaylist: async (req, res) => {
+    getVideoFromPlaylist: async(req, res) => {
         var body = req.body;
         console.log(body);
         keyApiYoutube = await checkAPIKeyAndChangeKey()
@@ -368,30 +359,24 @@ module.exports = {
                         for (var detailVideo = 0; detailVideo < data.data.items.length; detailVideo++) {
                             var objDetailVideo = {};
                             let objWhere = {}
-                            if (data.data.items[detailVideo].id.videoId) {
-                                objWhere = {
-                                    VideoID: data.data.items[detailVideo].id.videoId
-                                }
-                            } else {
-                                objWhere = {
-                                    PlayListID: body.playlistID
-                                }
+                            objWhere = {
+                                VideoID: data.data.items[detailVideo].snippet.resourceId.videoId
                             }
                             let chekVideoIDExist = await mtblVideoManager(db).findOne({
                                 where: objWhere
                             })
                             if (!chekVideoIDExist) {
-                                // console.log(data.data.items[detailVideo]);
+                                console.log(data.data.items[detailVideo].snippet.playlistId);
                                 await mtblVideoManager(db).create({
                                     Name: data.data.items[detailVideo].kind,
                                     ViewVideo: 0,
                                     Likes: 0,
-                                    CreateDate: data.data.items[detailVideo].publishTime ? data.data.items[detailVideo].publishTime : null,
+                                    CreateDate: data.data.items[detailVideo].snippet.publishedAt ? data.data.items[detailVideo].snippet.publishedAt : null,
                                     EditDate: now,
                                     Type: data.data.items[detailVideo].id.videoId ? 'Video' : 'Video',
                                     Status: data.data.items[detailVideo].liveBroadcastContent,
                                     Duration: 0,
-                                    IDchannel: data.data.items[detailVideo].snippet.channelId,
+                                    channelID: data.data.items[detailVideo].snippet.channelId,
                                     VideoID: data.data.items[detailVideo].snippet.resourceId.videoId,
                                     PlaylistID: data.data.items[detailVideo].snippet.playlistId,
                                     Title: data.data.items[detailVideo].snippet.title,
@@ -402,7 +387,7 @@ module.exports = {
                                     name: data.data.items[detailVideo].kind,
                                     viewVideo: 0,
                                     likes: 0,
-                                    createDate: data.data.items[detailVideo].publishTime ? data.data.items[detailVideo].publishTime : null,
+                                    createDate: data.data.items[detailVideo].snippet.publishedAt ? data.data.items[detailVideo].snippet.publishedAt : null,
                                     editDate: now,
                                     type: data.data.items[detailVideo].id.videoId ? 'Video' : 'Playlist',
                                     status: data.data.items[detailVideo].liveBroadcastContent,
@@ -415,7 +400,7 @@ module.exports = {
                                     linkImage: data.data.items[detailVideo].snippet.thumbnails.default ? data.data.items[detailVideo].snippet.thumbnails.default.url : null,
                                 }
                             } else {
-                                objDetailVideo = await getDetailTBLVideoManager(data.data.items[detailVideo].id.videoId, data.data.items[detailVideo].id.playlistId)
+                                objDetailVideo = await getDetailTBLVideoManager(data.data.items[detailVideo].snippet.resourceId.videoId, data.data.items[detailVideo].snippet.playlistId)
                             }
                             array.push(objDetailVideo)
                         }
@@ -428,8 +413,7 @@ module.exports = {
                             all: data.data.items.length,
                         }
                         res.json(result);
-                    }
-                    else {
+                    } else {
                         res.json(Result.SYS_ERROR_RESULT)
                     }
                 })
@@ -445,7 +429,7 @@ module.exports = {
     // channelId=UCpd1Gf-SZjc_5ce5vVq5FTg tìm kiếm theo channel
     // q=Preyta& tìm kiếm theo key
     //  https://www.googleapis.com/youtube/v3/search?key=AIzaSyDVzAJA0AuX-wpXBD_dp7POoMu0Bh4cSik&channelId=UCpd1Gf-SZjc_5ce5vVq5FTg&part=snippet,id&order=date&maxResults=10&q=Preyta&list=PLzXDRSq8o2GNnjHqr3z6P1LRFGw3RY0fB&type=video&pageToken=CAIQAA
-    getVideoFromchannel: async (req, res) => {
+    getVideoFromchannel: async(req, res) => {
         let body = req.body;
         keyApiYoutube = await checkAPIKeyAndChangeKey()
         await database.connectDatabase().then(async db => {
@@ -498,14 +482,14 @@ module.exports = {
                                     Name: data.data.items[detailVideo].kind,
                                     ViewVideo: 0,
                                     Likes: 0,
-                                    CreateDate: data.data.items[detailVideo].publishTime ? data.data.items[detailVideo].publishTime : null,
+                                    CreateDate: data.data.items[detailVideo].snippet.publishTime ? data.data.items[detailVideo].snippet.publishTime : null,
                                     EditDate: now,
                                     Type: data.data.items[detailVideo].id.videoId ? 'Video' : 'Playlist',
                                     Status: data.data.items[detailVideo].liveBroadcastContent,
                                     Duration: 0,
-                                    IDchannel: data.data.items[detailVideo].snippet.channelId,
+                                    channelID: data.data.items[detailVideo].snippet.channelId,
                                     VideoID: data.data.items[detailVideo].id.videoId,
-                                    PlayListID: data.data.items[detailVideo].id.playlistId,
+                                    PlaylistID: data.data.items[detailVideo].id.playlistId,
                                     Title: data.data.items[detailVideo].snippet.title,
                                     Description: data.data.items[detailVideo].snippet.description,
                                     LinkImage: data.data.items[detailVideo].snippet.thumbnails.default.url,
@@ -514,7 +498,7 @@ module.exports = {
                                     name: data.data.items[detailVideo].kind,
                                     viewVideo: 0,
                                     likes: 0,
-                                    createDate: data.data.items[detailVideo].publishTime ? data.data.items[detailVideo].publishTime : null,
+                                    createDate: data.data.items[detailVideo].snippet.publishTime ? data.data.items[detailVideo].snippet.publishTime : null,
                                     editDate: now,
                                     type: data.data.items[detailVideo].id.videoId ? 'Video' : 'Playlist',
                                     status: data.data.items[detailVideo].liveBroadcastContent,
@@ -540,8 +524,7 @@ module.exports = {
                             all: data.data.items.length,
                         }
                         res.json(result);
-                    }
-                    else {
+                    } else {
                         res.json(Result.SYS_ERROR_RESULT)
                     }
                 })
@@ -550,7 +533,7 @@ module.exports = {
             }
         })
     },
-    getDetailVideoManager: async (req, res) => {
+    getDetailVideoManager: async(req, res) => {
         var body = req.body;
         let results = await getDetailVideo(body.videoID)
         if (results) {

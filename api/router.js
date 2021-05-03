@@ -1,4 +1,4 @@
-module.exports = function (app) {
+module.exports = function(app) {
     // var checkToken = require('./constants/token');
     var youtube = require('./controllers/youtube');
 
@@ -24,6 +24,10 @@ module.exports = function (app) {
     app.route('/update_tbl_video_manager').post(videoManager.updatetblVideoManager);
     app.route('/delete_tbl_video_manager').post(videoManager.deletetblVideoManager);
     app.route('/get_list_tbl_video_manager').post(videoManager.getListtblVideoManager);
+
+    app.route('/plus_likes').post(videoManager.plusLikes);
+
+    app.route('/plus_views').post(videoManager.plusViews);
 
     var pointManager = require('./controllers/ctl-tblPointManager')
     app.route('/add_tbl_point_manager').post(pointManager.addtblPointManager);
