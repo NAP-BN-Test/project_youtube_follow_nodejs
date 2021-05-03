@@ -72,6 +72,29 @@ var database = require('../database');
 const passport = require('passport')
 let keyApiYoutube = 'AIzaSyDVhyJWQ_jVRZ-MK-lpJdtUO-ihOEbPMSs'
 async function checkAPIKeyAndChangeKey() {
+    // let arrayKey = [
+    //     'AIzaSyDVzAJA0AuX-wpXBD_dp7POoMu0Bh4cSik',
+    //     'AIzaSyDfzv9glyX533H9Vnvx21iE0yh057VdoVc',
+    //     'AIzaSyA_rmVM2ygTAbkuNdTRyQcl8ScBxFAjyug',
+    //     'AIzaSyAix0vFZCvdxiRMzDyxpQli8daHHD_kraA',
+    //     'AIzaSyBr46euUD9-e41U0-D3PDGKSsi4MFznxSg',
+    //     'AIzaSyDHMitbSmTTW2xVUbHiVz-TekY23fPv_k0',
+    // ]
+    // keyResult = 'AIzaSyDVzAJA0AuX-wpXBD_dp7POoMu0Bh4cSik'
+    // for (var key = 0; key < arrayKey.length; key++) {
+    //     var strUrl = 'https://www.googleapis.com/youtube/v3/search?key=' + arrayKey[key] + '&channelId=UCswpuhr07BLpHpmt2vRa81A&part=snippet,id&order=date&maxResults=10&type=video&q=28%2F4'
+    //     try {
+    //         await axios.get(strUrl).then(data => {
+    //             if (data) {
+    //                 keyResult = arrayKey[key]
+    //             }
+    //         })
+    //         break
+    //     } catch (error) {
+    //         console.log(error + ' ');
+    //         continue
+    //     }
+    // }
     keyResult = 'AIzaSyBCmzVh-WiaNiXCoBLJe1WIm3C2SzZV5mE'
     return keyResult
 }
