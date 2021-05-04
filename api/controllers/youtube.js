@@ -72,43 +72,48 @@ var database = require('../database');
 const passport = require('passport')
 let keyApiYoutube = 'AIzaSyDVhyJWQ_jVRZ-MK-lpJdtUO-ihOEbPMSs'
 async function checkAPIKeyAndChangeKey() {
-    // let arrayKey = [
-    //     'AIzaSyDVzAJA0AuX-wpXBD_dp7POoMu0Bh4cSik',
-    //     'AIzaSyDfzv9glyX533H9Vnvx21iE0yh057VdoVc',
-    //     'AIzaSyA_rmVM2ygTAbkuNdTRyQcl8ScBxFAjyug',
-    //     'AIzaSyAix0vFZCvdxiRMzDyxpQli8daHHD_kraA',
-    //     'AIzaSyBr46euUD9-e41U0-D3PDGKSsi4MFznxSg',
-    //     'AIzaSyDHMitbSmTTW2xVUbHiVz-TekY23fPv_k0',
-    // ]
-    // keyResult = 'AIzaSyDVzAJA0AuX-wpXBD_dp7POoMu0Bh4cSik'
-    // for (var key = 0; key < arrayKey.length; key++) {
-    //     var strUrl = 'https://www.googleapis.com/youtube/v3/search?key=' + arrayKey[key] + '&channelId=UCswpuhr07BLpHpmt2vRa81A&part=snippet,id&order=date&maxResults=10&type=video&q=28%2F4'
-    //     try {
-    //         await axios.get(strUrl).then(data => {
-    //             if (data) {
-    //                 keyResult = arrayKey[key]
-    //             }
-    //         })
-    //         break
-    //     } catch (error) {
-    //         console.log(error + ' ');
-    //         continue
-    //     }
-    // }
-    keyResult = 'AIzaSyBCmzVh-WiaNiXCoBLJe1WIm3C2SzZV5mE'
+    let arrayKey = [
+        'AIzaSyDVzAJA0AuX-wpXBD_dp7POoMu0Bh4cSik',
+        'AIzaSyBCmzVh-WiaNiXCoBLJe1WIm3C2SzZV5mE',
+        'AIzaSyDfzv9glyX533H9Vnvx21iE0yh057VdoVc',
+        'AIzaSyA_rmVM2ygTAbkuNdTRyQcl8ScBxFAjyug',
+        'AIzaSyAix0vFZCvdxiRMzDyxpQli8daHHD_kraA',
+        'AIzaSyBr46euUD9-e41U0-D3PDGKSsi4MFznxSg',
+        'AIzaSyDHMitbSmTTW2xVUbHiVz-TekY23fPv_k0',
+    ]
+    keyResult = 'AIzaSyDVzAJA0AuX-wpXBD_dp7POoMu0Bh4cSik'
+    for (var key = 0; key < arrayKey.length; key++) {
+        var strUrl = 'https://www.googleapis.com/youtube/v3/search?key=' + arrayKey[key] + '&channelId=UCswpuhr07BLpHpmt2vRa81A&part=snippet,id&order=date&maxResults=10&type=video'
+        try {
+            await axios.get(strUrl).then(data => {
+                if (data) {
+                    keyResult = arrayKey[key]
+                }
+            })
+            break
+        } catch (error) {
+            console.log(error + ' ');
+            continue
+        }
+    }
+    // keyResult = 'AIzaSyBCmzVh-WiaNiXCoBLJe1WIm3C2SzZV5mE'
     return keyResult
 }
 async function getDetailChannel(channelID) {
     let obj = {}
     keyApiYoutube = await checkAPIKeyAndChangeKey()
+    console.log(keyApiYoutube);
     var strUrl = 'https://youtube.googleapis.com/youtube/v3/channels?part=snippet&key=' + keyApiYoutube + '&id='
     await axios.get(strUrl + channelID).then(data => {
         if (data) {
+            // console.log(data.data.items[0].snippet.thumbnails);
             if (data.data.items.length > 0) {
                 obj['channelTitle'] = data.data.items[0].snippet.title;
                 obj['channelId'] = channelID;
                 obj['description'] = data.data.items[0].snippet.description;
-                obj['uriImg'] = data.data.items[0].snippet.thumbnails.default.url;
+                // obj['uriImg'] = data.data.items[0].snippet.thumbnails.default.url;
+                // obj['uriImg'] = data.data.items[0].snippet.thumbnails.medium.url;
+                obj['uriImg'] = data.data.items[0].snippet.thumbnails.high.url;
             }
         }
     })
@@ -312,10 +317,6 @@ module.exports = {
                         countVideo: countVideo,
                     })
                 }
-                data.data.items.forEach(item => {
-
-                })
-                // console.log(data);
                 var result = {
                     array: array,
                     all: data.data.items.length
@@ -439,7 +440,7 @@ module.exports = {
                 var stringIDchannel = '&channelId=' + body.channelID
                 var strPart = '&part=snippet,id&order=date'
                 var maxResults = '&maxResults=10&type=video'
-                var pageToken = '&pageToken=' + (body.nextPageToken ? body.nextPageToken : 'CAoQAA')
+                var pageToken = '&pageToken=' + (body.nextPageToken ? body.nextPageToken : 'CAoQAQ')
                 var search = '&q=' + await removeDiacritics((body.searchKey ? body.searchKey : ''))
                 let now = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
                 search = search.replace(/ /g, '%20')

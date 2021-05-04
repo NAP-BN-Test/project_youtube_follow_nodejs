@@ -16,8 +16,7 @@ module.exports = function (db) {
         CreateDate: Sequelize.DATE,
         EditDate: Sequelize.DATE,
         StartTime: Sequelize.NOW,
-        EndTime: Sequelize.NOW
-
+        EndTime: Sequelize.NOW,
     });
 
     return table;

@@ -1,15 +1,15 @@
 const Sequelize = require('sequelize');
 
 module.exports = function (db) {
-    var table = db.define('tblUser', {
+    var table = db.define('tblHistoryReviewVideo', {
         ID: {
             type: Sequelize.BIGINT,
             primaryKey: true,
             autoIncrement: true
         },
-        Email: Sequelize.STRING,
-        IDApple: Sequelize.BIGINT,
-        IDAccount: Sequelize.BIGINT,
+        UserID: Sequelize.STRING,
+        VideoID: Sequelize.STRING
+
     });
 
     return table;

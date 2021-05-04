@@ -11,6 +11,8 @@ module.exports = function (db) {
         Password: Sequelize.STRING,
         Permission: Sequelize.STRING,
         Active: Sequelize.BOOLEAN,
+        UserID: Sequelize.STRING,
+        Score: Sequelize.FLOAT,
 
     });
 

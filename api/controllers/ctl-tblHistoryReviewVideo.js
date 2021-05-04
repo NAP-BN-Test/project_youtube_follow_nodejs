@@ -2,27 +2,29 @@ const Constant = require('../constants/constant');
 const Op = require('sequelize').Op;
 const Result = require('../constants/result');
 var moment = require('moment');
-var mtblUser = require('../tables/tblUser')
+var mtblHistoryReviewVideo = require('../tables/tblHistoryReviewVideo')
 var database = require('../database');
-async function deleteRelationshiptblUser(db, listID) {
-    await mtblUser(db).destroy({
+var mtblVideoManager = require('../tables/tblVideoManager')
+var mtblAccount = require('../tables/tblAccount')
+
+async function deleteRelationshiptblHistoryReviewVideo(db, listID) {
+    await mtblHistoryReviewVideo(db).destroy({
         where: {
             ID: { [Op.in]: listID }
         }
     })
 }
 module.exports = {
-    deleteRelationshiptblUser,
-    // add_tbl_user
-    addtblUser: (req, res) => {
+    deleteRelationshiptblHistoryReviewVideo,
+    // add_tbl_history_review_video
+    addtblHistoryReviewVideo: (req, res) => {
         let body = req.body;
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
-                    mtblUser(db).create({
-                        Email: body.email ? body.email : '',
-                        IDApple: body.appleID ? body.appleID : null,
-                        IDAccount: body.accountID ? body.accountID : null,
+                    mtblHistoryReviewVideo(db).create({
+                        VideoID: body.videoID ? body.videoID : null,
+                        UserID: body.userID ? body.userID : null,
                     }).then(data => {
                         var result = {
                             status: Constant.STATUS.SUCCESS,
@@ -39,28 +41,18 @@ module.exports = {
             }
         })
     },
-    // update_tbl_user
-    updatetblUser: (req, res) => {
+    // update_tbl_history_review_video
+    updatetblHistoryReviewVideo: (req, res) => {
         let body = req.body;
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
                     let update = [];
-                    if (body.email || body.email === '')
-                        update.push({ key: 'Email', value: body.email });
-                    if (body.appleID || body.appleID === '') {
-                        if (body.appleID === '')
-                            update.push({ key: 'IDApple', value: null });
-                        else
-                            update.push({ key: 'IDApple', value: body.appleID });
-                    }
-                    if (body.accountID || body.accountID === '') {
-                        if (body.accountID === '')
-                            update.push({ key: 'IDAccount', value: null });
-                        else
-                            update.push({ key: 'IDAccount', value: body.accountID });
-                    }
-                    database.updateTable(update, mtblUser(db), body.id).then(response => {
+                    if (body.userID || body.userID === '')
+                        update.push({ key: 'UserID', value: body.userID });
+                    if (body.videoID || body.videoID === '')
+                        update.push({ key: 'VideoID', value: body.videoID });
+                    database.updateTable(update, mtblHistoryReviewVideo(db), body.id).then(response => {
                         if (response == 1) {
                             res.json(Result.ACTION_SUCCESS);
                         } else {
@@ -76,14 +68,14 @@ module.exports = {
             }
         })
     },
-    // delete_tbl_user
-    deletetblUser: (req, res) => {
+    // delete_tbl_history_review_video
+    deletetblHistoryReviewVideo: (req, res) => {
         let body = req.body;
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
                     let listID = JSON.parse(body.listID);
-                    await deleteRelationshiptblUser(db, listID);
+                    await deleteRelationshiptblHistoryReviewVideo(db, listID);
                     var result = {
                         status: Constant.STATUS.SUCCESS,
                         message: Constant.MESSAGE.ACTION_SUCCESS,
@@ -98,8 +90,8 @@ module.exports = {
             }
         })
     },
-    // get_list_tbl_user
-    getListtblUser: (req, res) => {
+    // get_history_review_video_of_staff
+    getHistoryReviewVideoOfStaff: (req, res) => {
         let body = req.body;
         database.connectDatabase().then(async db => {
             if (db) {
@@ -143,7 +135,7 @@ module.exports = {
                     //     }
                     // }
                     let stt = 1;
-                    mtblUser(db).findAll({
+                    mtblHistoryReviewVideo(db).findAll({
                         offset: Number(body.itemPerPage) * (Number(body.page) - 1),
                         limit: Number(body.itemPerPage),
                         where: whereOjb,
@@ -152,18 +144,29 @@ module.exports = {
                         ],
                     }).then(async data => {
                         var array = [];
-                        data.forEach(element => {
+                        for (var history = 0; history < data.length; history++) {
+                            let videoDetail = await mtblVideoManager(db).findOne({
+                                VideoID: data[history].VideoID
+                            })
+                            let userDetail = await mtblAccount(db).findOne({
+                                UserID: data[history].UserID
+                            })
                             var obj = {
                                 stt: stt,
-                                id: Number(element.ID),
-                                email: element.Email ? element.Email : '',
-                                appleID: element.IDApple ? element.IDApple : '',
-                                accountID: element.IDAccount ? element.IDAccount : '',
+                                id: Number(data[history].ID),
+                                videoID: data[history].VideoID ? data[history].VideoID : '',
+                                nameVideo: videoDetail.Name ? videoDetail.Name : '',
+                                titleVideo: videoDetail.Title ? videoDetail.Title : '',
+                                descriptionVideo: videoDetail.Description ? videoDetail.Description : '',
+                                linkImage: videoDetail.LinkImage ? videoDetail.LinkImage : '',
+                                userID: data[history].UserID ? data[history].UserID : '',
+                                userName: userDetail.UserName ? userDetail.UserName : '',
+                                permission: userDetail.Permission ? userDetail.Permission : '',
                             }
                             array.push(obj);
                             stt += 1;
-                        });
-                        var count = await mtblUser(db).count({ where: whereOjb, })
+                        }
+                        var count = await mtblHistoryReviewVideo(db).count({ where: whereOjb, })
                         var result = {
                             array: array,
                             status: Constant.STATUS.SUCCESS,
@@ -182,36 +185,4 @@ module.exports = {
             }
         })
     },
-    // get_list_name_tbl_user
-    getListNametblUser: (req, res) => {
-        let body = req.body;
-        database.connectDatabase().then(async db => {
-            if (db) {
-                try {
-                    mtblUser(db).findAll().then(data => {
-                        var array = [];
-                        data.forEach(element => {
-                            var obj = {
-                                id: Number(element.ID),
-                                email: element.Email ? element.Email : '',
-                            }
-                            array.push(obj);
-                        });
-                        var result = {
-                            array: array,
-                            status: Constant.STATUS.SUCCESS,
-                            message: Constant.MESSAGE.ACTION_SUCCESS,
-                        }
-                        res.json(result);
-                    })
-
-                } catch (error) {
-                    console.log(error);
-                    res.json(Result.SYS_ERROR_RESULT)
-                }
-            } else {
-                res.json(Constant.MESSAGE.USER_FAIL)
-            }
-        })
-    }
 }

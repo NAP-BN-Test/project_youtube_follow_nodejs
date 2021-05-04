@@ -1,4 +1,4 @@
-module.exports = function(app) {
+module.exports = function (app) {
     // var checkToken = require('./constants/token');
     var youtube = require('./controllers/youtube');
 
@@ -18,6 +18,7 @@ module.exports = function(app) {
     app.route('/update_tbl_account').post(accountManager.updatetblAccount);
     app.route('/delete_tbl_account').post(accountManager.deletetblAccount);
     app.route('/get_list_tbl_account').post(accountManager.getListtblAccount);
+    app.route('/plus_score_for_staff').post(accountManager.plusScoreForStaff);
 
     var videoManager = require('./controllers/ctl-tblVideoManager')
     app.route('/add_tbl_video_manager').post(videoManager.addtblVideoManager);
@@ -35,10 +36,9 @@ module.exports = function(app) {
     app.route('/delete_tbl_point_manager').post(pointManager.deletetblPointManager);
     app.route('/get_list_tbl_point_manager').post(pointManager.getListtblPointManager);
 
-    var user = require('./controllers/ctl-tblUser')
-    app.route('/add_tbl_user').post(user.addtblUser);
-    app.route('/update_tbl_user').post(user.updatetblUser);
-    app.route('/delete_tbl_user').post(user.deletetblUser);
-    app.route('/get_list_tbl_user').post(user.getListtblUser);
+    var historyReviewVideo = require('./controllers/ctl-tblHistoryReviewVideo')
+    app.route('/add_tbl_history_review_video').post(historyReviewVideo.addtblHistoryReviewVideo);
+    app.route('/get_history_review_video_of_staff').post(historyReviewVideo.getHistoryReviewVideoOfStaff);
+
 
 }

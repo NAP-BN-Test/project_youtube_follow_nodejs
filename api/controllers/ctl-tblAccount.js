@@ -58,18 +58,35 @@ module.exports = {
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
-                    mtblAccount(db).create({
-                        UserName: body.userName ? body.userName : '',
-                        Password: body.password ? body.password : '',
-                        Permission: body.permission ? body.permission : '',
-                        Active: body.active ? body.active : '',
-                    }).then(data => {
+                    let check;
+                    if (body.userID) {
+                        check = await mtblAccount(db).findOne({
+                            where: { UserID: body.userID }
+                        })
+                    }
+                    if (check) {
                         var result = {
-                            status: Constant.STATUS.SUCCESS,
-                            message: Constant.MESSAGE.ACTION_SUCCESS,
+                            status: Constant.STATUS.FAIL,
+                            message: 'Tài khoản đã tồn tại. Vui lòng kiểm tra lại !',
                         }
                         res.json(result);
-                    })
+                    } else {
+                        mtblAccount(db).create({
+                            UserName: body.userName ? body.userName : '',
+                            Password: body.password ? body.password : '',
+                            Permission: 'Nhân viên',
+                            Active: true,
+                            UserID: body.userID ? body.userID : '',
+                            Score: 0,
+                        }).then(data => {
+                            var result = {
+                                status: Constant.STATUS.SUCCESS,
+                                message: Constant.MESSAGE.ACTION_SUCCESS,
+                            }
+                            res.json(result);
+                        })
+                    }
+
                 } catch (error) {
                     console.log(error);
                     res.json(Result.SYS_ERROR_RESULT)
@@ -194,6 +211,7 @@ module.exports = {
                                 password: element.Password ? element.Password : '',
                                 permission: element.Permission ? element.Permission : '',
                                 Active: element.Active ? element.Active : '',
+                                userID: element.UserID ? element.UserID : '',
                             }
                             array.push(obj);
                             stt += 1;
@@ -248,5 +266,33 @@ module.exports = {
                 res.json(Constant.MESSAGE.USER_FAIL)
             }
         })
-    }
+    },
+    // plus_score_for_staff
+    plusScoreForStaff: (req, res) => {
+        let body = req.body;
+        database.connectDatabase().then(async db => {
+            if (db) {
+                try {
+                    let pastAccount = await mtblAccount(db).findOne({
+                        where: { UserID: body.userID }
+                    })
+                    await mtblAccount(db).update({
+                        Score: pastAccount.Score + 1,
+                    }, {
+                        where: { UserID: body.userID }
+                    })
+                    var result = {
+                        status: Constant.STATUS.SUCCESS,
+                        message: Constant.MESSAGE.ACTION_SUCCESS,
+                    }
+                    res.json(result);
+                } catch (error) {
+                    console.log(error);
+                    res.json(Result.SYS_ERROR_RESULT)
+                }
+            } else {
+                res.json(Constant.MESSAGE.USER_FAIL)
+            }
+        })
+    },
 }
