@@ -15,7 +15,7 @@ module.exports = {
             if (err) console.log(err + '');
         });
         var result = {
-            link: 'http://103.154.100.26:1357/ageless_sendmail/' + dir,
+            link: 'http://dbdev.namanphu.vn:1357/ageless_sendmail/' + dir,
             name: body.data.name,
             status: Constant.STATUS.SUCCESS,
             message: Constant.MESSAGE.ACTION_SUCCESS,
@@ -27,7 +27,7 @@ module.exports = {
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
-                    var file = body.link.replace("http://103.154.100.26:1357/ageless_sendmail/", "")
+                    var file = body.link.replace("http://dbdev.namanphu.vn:1357/ageless_sendmail/", "")
                     fs.unlink("C:/images_services/ageless_sendmail/" + file, (err) => {
                         if (err) console.log(err);
                     });

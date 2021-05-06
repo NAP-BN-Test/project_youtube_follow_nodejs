@@ -42,7 +42,7 @@ module.exports = {
     config: {
         user: 'sa',
         password: 'Viet@solution$213%171^198',
-        server: '103.154.100.26',
+        server: 'dbdev.namanphu.vn',
         database: 'FollowYoutube_DB', // GELESS_QLNB con demo
         options: {
             encrypt: false,
