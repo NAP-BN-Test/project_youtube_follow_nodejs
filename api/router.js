@@ -1,6 +1,10 @@
 module.exports = function (app) {
     // var checkToken = require('./constants/token');
     var youtube = require('./controllers/youtube');
+    var uploadFile = require('./controllers/upload-file');
+    app.route('/convert_base64_to_image').post(uploadFile.converBase64ToImg);
+    app.route('/delete_file_from_link').post(uploadFile.deletetblFileFromLink);
+
 
     app.route('/get_list_video_from_channel').post(youtube.getVideoFromchannel);
     app.route('/get_list_video_from_playlist').post(youtube.getVideoFromPlaylist);
