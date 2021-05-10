@@ -73,6 +73,9 @@ module.exports = {
                     } else {
                         mtblAccount(db).create({
                             UserName: body.userName ? body.userName : '',
+                            Name: body.name ? body.name : '',
+                            Email: body.email ? body.email : '',
+                            UserName: body.userName ? body.userName : '',
                             Password: body.password ? body.password : '',
                             Permission: 'Nhân viên',
                             Active: true,
@@ -105,6 +108,10 @@ module.exports = {
                     let update = [];
                     if (body.userName || body.userName === '')
                         update.push({ key: 'UserName', value: body.userName });
+                    if (body.name || body.name === '')
+                        update.push({ key: 'Name', value: body.name });
+                    if (body.email || body.email === '')
+                        update.push({ key: 'Email', value: body.email });
                     if (body.password || body.password === '')
                         update.push({ key: 'Password', value: body.password });
                     if (body.permission || body.permission === '')
@@ -212,6 +219,8 @@ module.exports = {
                                 permission: element.Permission ? element.Permission : '',
                                 Active: element.Active ? element.Active : '',
                                 userID: element.UserID ? element.UserID : '',
+                                name: element.Name ? element.Name : '',
+                                email: element.Email ? element.Email : '',
                             }
                             array.push(obj);
                             stt += 1;
