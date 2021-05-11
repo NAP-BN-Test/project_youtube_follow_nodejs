@@ -15,6 +15,7 @@ module.exports = function(db) {
         Score: Sequelize.FLOAT,
         Name: Sequelize.STRING,
         Email: Sequelize.STRING,
+        UrlImage: Sequelize.STRING,
     });
 
     return table;
