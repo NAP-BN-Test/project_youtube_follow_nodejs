@@ -222,6 +222,7 @@ module.exports = {
                                 userID: element.UserID ? element.UserID : '',
                                 name: element.Name ? element.Name : '',
                                 email: element.Email ? element.Email : '',
+                                urlImage: element.UrlImage ? element.UrlImage : '',
                             }
                             array.push(obj);
                             stt += 1;
