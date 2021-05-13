@@ -80,7 +80,7 @@ module.exports = {
                             Permission: 'Nhân viên',
                             Active: true,
                             UserID: body.userID ? body.userID : '',
-                            UrlImage: body.urlImage ? body.urlImage : '',
+                            UrlImage: body.photo ? body.photo : '',
                             Score: 0,
                         }).then(data => {
                             var result = {
