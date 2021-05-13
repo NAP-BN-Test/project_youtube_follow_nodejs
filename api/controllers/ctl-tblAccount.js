@@ -55,6 +55,7 @@ module.exports = {
     // add_tbl_account
     addtblAccount: (req, res) => {
         let body = req.body;
+        console.log(body);
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
@@ -72,7 +73,6 @@ module.exports = {
                             UserName: body.userName ? body.userName : '',
                             Name: body.name ? body.name : '',
                             Email: body.email ? body.email : '',
-                            UserName: body.userName ? body.userName : '',
                             Password: body.password ? body.password : '',
                             Permission: 'Nhân viên',
                             Active: true,
@@ -138,7 +138,9 @@ module.exports = {
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
-                    let listID = JSON.parse(body.listID);
+                    // let listID = JSON.parse(body.listID);
+                    let listID = [];
+                    listID.push(body.id)
                     await deleteRelationshiptblAccount(db, listID);
                     var result = {
                         status: Constant.STATUS.SUCCESS,
