@@ -58,16 +58,13 @@ module.exports = {
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
-                    let check;
-                    if (body.userID) {
-                        check = await mtblAccount(db).findOne({
-                            where: { UserID: body.userID }
-                        })
-                    }
+                    let check = await mtblAccount(db).findOne({
+                        where: { Email: body.email }
+                    })
                     if (check) {
                         var result = {
-                            status: Constant.STATUS.FAIL,
-                            message: 'Tài khoản đã tồn tại. Vui lòng kiểm tra lại !',
+                            status: Constant.STATUS.SUCCESS,
+                            message: Constant.MESSAGE.ACTION_SUCCESS,
                         }
                         res.json(result);
                     } else {
