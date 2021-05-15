@@ -80,7 +80,14 @@ module.exports = {
                             UrlImage: body.photo ? body.photo : '',
                             Score: 0,
                         }).then(data => {
+                            let data = {
+                                name: data.name ? data.name : '',
+                                urlImage: data.UrlImage ? data.UrlImage : '',
+                                email: data.Email ? data.Email : '',
+                                id: data.ID ? data.ID : ''
+                            }
                             var result = {
+                                data: data,
                                 status: Constant.STATUS.SUCCESS,
                                 message: Constant.MESSAGE.ACTION_SUCCESS,
                             }
