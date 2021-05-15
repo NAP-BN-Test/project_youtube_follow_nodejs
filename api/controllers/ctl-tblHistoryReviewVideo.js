@@ -138,7 +138,7 @@ module.exports = {
                     mtblHistoryReviewVideo(db).findAll({
                         offset: Number(body.itemPerPage) * (Number(body.page) - 1),
                         limit: Number(body.itemPerPage),
-                        where: whereOjb,
+                        where: { UserID: body.userID },
                         order: [
                             ['ID', 'DESC']
                         ],
