@@ -63,7 +63,14 @@ module.exports = {
                         where: { Email: body.email }
                     })
                     if (check) {
+                        let dataResult = {
+                            name: check.name ? check.name : '',
+                            urlImage: check.UrlImage ? check.UrlImage : '',
+                            email: check.Email ? check.Email : '',
+                            id: check.ID ? check.ID : ''
+                        }
                         var result = {
+                            data: dataResult,
                             status: Constant.STATUS.SUCCESS,
                             message: Constant.MESSAGE.ACTION_SUCCESS,
                         }
@@ -80,14 +87,14 @@ module.exports = {
                             UrlImage: body.photo ? body.photo : '',
                             Score: 0,
                         }).then(data => {
-                            let data = {
+                            let dataResult = {
                                 name: data.name ? data.name : '',
                                 urlImage: data.UrlImage ? data.UrlImage : '',
                                 email: data.Email ? data.Email : '',
                                 id: data.ID ? data.ID : ''
                             }
                             var result = {
-                                data: data,
+                                data: dataResult,
                                 status: Constant.STATUS.SUCCESS,
                                 message: Constant.MESSAGE.ACTION_SUCCESS,
                             }
