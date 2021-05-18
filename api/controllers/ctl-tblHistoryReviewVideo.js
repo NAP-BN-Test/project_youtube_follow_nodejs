@@ -169,10 +169,10 @@ module.exports = {
                         var array = [];
                         for (var history = 0; history < data.length; history++) {
                             let videoDetail = await mtblVideoManager(db).findOne({
-                                VideoID: data[history].VideoID
+                                where: { VideoID: data[history].VideoID }
                             })
                             let userDetail = await mtblAccount(db).findOne({
-                                UserID: data[history].UserID
+                                where: { UserID: data[history].UserID }
                             })
                             var obj = {
                                 stt: stt,
@@ -183,8 +183,8 @@ module.exports = {
                                 description: videoDetail.Description ? videoDetail.Description : '',
                                 linkImage: videoDetail.LinkImage ? videoDetail.LinkImage : '',
                                 userID: data[history].UserID ? data[history].UserID : '',
-                                userName: userDetail.UserName ? userDetail.UserName : '',
-                                permission: userDetail.Permission ? userDetail.Permission : '',
+                                // userName: userDetail.UserName ? userDetail.UserName : '',
+                                // permission: userDetail.Permission ? userDetail.Permission : '',
                             }
                             array.push(obj);
                             stt += 1;
