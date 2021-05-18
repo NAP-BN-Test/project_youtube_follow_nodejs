@@ -21,6 +21,7 @@ module.exports = {
     // add_tbl_history_review_video
     addtblHistoryReviewVideo: (req, res) => {
         let body = req.body;
+        console.log(body);
         let now = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
         database.connectDatabase().then(async db => {
             if (db) {
@@ -162,7 +163,7 @@ module.exports = {
                         limit: 10,
                         where: { UserID: body.userID },
                         order: [
-                            ['ID', 'DESC']
+                            ['ReviewDate', 'DESC']
                         ],
                     }).then(async data => {
                         var array = [];
@@ -178,8 +179,8 @@ module.exports = {
                                 id: Number(data[history].ID),
                                 videoID: data[history].VideoID ? data[history].VideoID : '',
                                 nameVideo: videoDetail.Name ? videoDetail.Name : '',
-                                titleVideo: videoDetail.Title ? videoDetail.Title : '',
-                                descriptionVideo: videoDetail.Description ? videoDetail.Description : '',
+                                title: videoDetail.Title ? videoDetail.Title : '',
+                                description: videoDetail.Description ? videoDetail.Description : '',
                                 linkImage: videoDetail.LinkImage ? videoDetail.LinkImage : '',
                                 userID: data[history].UserID ? data[history].UserID : '',
                                 userName: userDetail.UserName ? userDetail.UserName : '',

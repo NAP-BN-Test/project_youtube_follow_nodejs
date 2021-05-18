@@ -22,9 +22,9 @@ function getNewToken(oauth2Client, callback) {
         input: process.stdin,
         output: process.stdout
     });
-    rl.question('Enter the code from that page here: ', function (code) {
+    rl.question('Enter the code from that page here: ', function(code) {
         rl.close();
-        oauth2Client.getToken(code, function (err, token) {
+        oauth2Client.getToken(code, function(err, token) {
             if (err) {
                 console.log('Error while trying to retrieve access token', err);
                 return;
@@ -42,7 +42,7 @@ function getChannel(auth) {
         auth: auth,
         part: 'snippet,contentDetails,statistics',
         forUsername: 'GoogleDevelopers'
-    }, function (err, response) {
+    }, function(err, response) {
         if (err) {
             console.log('The API returned an error: ' + err);
             return;
@@ -284,7 +284,7 @@ module.exports = {
                     }
                 }
             }
-        }, function (err, data, response) {
+        }, function(err, data, response) {
             if (err) {
                 lien.end('Error: ' + err);
             } else if (data) {
@@ -295,7 +295,7 @@ module.exports = {
             }
         });
     },
-    getListPlaylistFromchannel: async (req, res) => {
+    getListPlaylistFromchannel: async(req, res) => {
         var body = req.body;
         console.log(body);
         keyApiYoutube = await checkAPIKeyAndChangeKey()
@@ -327,7 +327,7 @@ module.exports = {
             }
         })
     },
-    getVideoFromPlaylist: async (req, res) => {
+    getVideoFromPlaylist: async(req, res) => {
         var body = req.body;
         console.log(body);
         keyApiYoutube = await checkAPIKeyAndChangeKey()
@@ -431,7 +431,7 @@ module.exports = {
     // channelId=UCpd1Gf-SZjc_5ce5vVq5FTg tìm kiếm theo channel
     // q=Preyta& tìm kiếm theo key
     //  https://www.googleapis.com/youtube/v3/search?key=AIzaSyDVzAJA0AuX-wpXBD_dp7POoMu0Bh4cSik&channelId=UCpd1Gf-SZjc_5ce5vVq5FTg&part=snippet,id&order=date&maxResults=10&q=Preyta&list=PLzXDRSq8o2GNnjHqr3z6P1LRFGw3RY0fB&type=video&pageToken=CAIQAA
-    getVideoFromchannel: async (req, res) => {
+    getVideoFromchannel: async(req, res) => {
         let body = req.body;
         keyApiYoutube = await checkAPIKeyAndChangeKey()
         await database.connectDatabase().then(async db => {
@@ -465,6 +465,7 @@ module.exports = {
                         let prevPageToken = data.data.prevPageToken ? data.data.prevPageToken : '';
                         let nextPageToken = data.data.nextPageToken ? data.data.nextPageToken : '';
                         for (var detailVideo = 0; detailVideo < data.data.items.length; detailVideo++) {
+                            console.log(data.data.items[detailVideo]);
                             var objDetailVideo = {};
                             let objWhere = {}
                             if (data.data.items[detailVideo].id.videoId) {
@@ -535,7 +536,7 @@ module.exports = {
             }
         })
     },
-    getDetailVideoManager: async (req, res) => {
+    getDetailVideoManager: async(req, res) => {
         var body = req.body;
         let results = await getDetailVideo(body.videoID)
         if (results) {
