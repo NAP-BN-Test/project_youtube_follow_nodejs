@@ -10,7 +10,9 @@ var mtblAccount = require('../tables/tblAccount')
 async function deleteRelationshiptblHistoryReviewVideo(db, listID) {
     await mtblHistoryReviewVideo(db).destroy({
         where: {
-            ID: { [Op.in]: listID }
+            ID: {
+                [Op.in]: listID
+            }
         }
     })
 }
@@ -19,19 +21,38 @@ module.exports = {
     // add_tbl_history_review_video
     addtblHistoryReviewVideo: (req, res) => {
         let body = req.body;
+        let now = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
-                    mtblHistoryReviewVideo(db).create({
-                        VideoID: body.videoID ? body.videoID : null,
-                        UserID: body.userID ? body.userID : null,
-                    }).then(data => {
+                    let history = await mtblHistoryReviewVideo(db).findOne({
+                        where: {
+                            VideoID: body.videoID,
+                            UserID: body.userID,
+                        }
+                    })
+                    if (!history)
+                        mtblHistoryReviewVideo(db).create({
+                            VideoID: body.videoID ? body.videoID : null,
+                            UserID: body.userID ? body.userID : null,
+                            ReviewDate: now,
+                        }).then(data => {
+                            var result = {
+                                status: Constant.STATUS.SUCCESS,
+                                message: Constant.MESSAGE.ACTION_SUCCESS,
+                            }
+                            res.json(result);
+                        })
+                    else {
+                        await mtblHistoryReviewVideo(db).update({
+                            ReviewDate: now,
+                        }, { where: { ID: history.ID } })
                         var result = {
                             status: Constant.STATUS.SUCCESS,
                             message: Constant.MESSAGE.ACTION_SUCCESS,
                         }
                         res.json(result);
-                    })
+                    }
                 } catch (error) {
                     console.log(error);
                     res.json(Result.SYS_ERROR_RESULT)
@@ -93,6 +114,7 @@ module.exports = {
     // get_history_review_video_of_staff
     getHistoryReviewVideoOfStaff: (req, res) => {
         let body = req.body;
+        console.log(body);
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
@@ -136,8 +158,8 @@ module.exports = {
                     // }
                     let stt = 1;
                     mtblHistoryReviewVideo(db).findAll({
-                        offset: Number(body.itemPerPage) * (Number(body.page) - 1),
-                        limit: Number(body.itemPerPage),
+                        offset: 10 * (Number(body.page) - 1),
+                        limit: 10,
                         where: { UserID: body.userID },
                         order: [
                             ['ID', 'DESC']

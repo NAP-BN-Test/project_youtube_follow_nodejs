@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 
-module.exports = function (db) {
+module.exports = function(db) {
     var table = db.define('tblHistoryReviewVideo', {
         ID: {
             type: Sequelize.BIGINT,
@@ -8,8 +8,8 @@ module.exports = function (db) {
             autoIncrement: true
         },
         UserID: Sequelize.STRING,
-        VideoID: Sequelize.STRING
-
+        VideoID: Sequelize.STRING,
+        ReviewDate: Sequelize.NOW
     });
 
     return table;

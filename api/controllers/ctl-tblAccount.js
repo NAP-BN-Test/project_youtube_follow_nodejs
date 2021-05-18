@@ -4,6 +4,8 @@ const Result = require('../constants/result');
 var moment = require('moment');
 var mtblAccount = require('../tables/tblAccount')
 var database = require('../database');
+var mtblHistoryReviewVideo = require('../tables/tblHistoryReviewVideo')
+
 async function deleteRelationshiptblAccount(db, listID) {
     await mtblAccount(db).destroy({
         where: {
@@ -67,7 +69,8 @@ module.exports = {
                             name: check.name ? check.name : '',
                             urlImage: check.UrlImage ? check.UrlImage : '',
                             email: check.Email ? check.Email : '',
-                            id: check.ID ? check.ID : ''
+                            id: check.ID ? check.ID : '',
+                            permission: check.Permission ? check.Permission : ''
                         }
                         var result = {
                             data: dataResult,
@@ -81,7 +84,7 @@ module.exports = {
                             Name: body.name ? body.name : '',
                             Email: body.email ? body.email : '',
                             Password: body.password ? body.password : '',
-                            Permission: 'Nhân viên',
+                            Permission: '1',
                             Active: true,
                             UserID: body.userID ? body.userID : '',
                             UrlImage: body.photo ? body.photo : '',
@@ -91,7 +94,8 @@ module.exports = {
                                 name: data.name ? data.name : '',
                                 urlImage: data.UrlImage ? data.UrlImage : '',
                                 email: data.Email ? data.Email : '',
-                                id: data.ID ? data.ID : ''
+                                id: data.ID ? data.ID : '',
+                                permission: data.Permission ? data.Permission : ''
                             }
                             var result = {
                                 data: dataResult,
@@ -297,14 +301,22 @@ module.exports = {
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
-                    let pastAccount = await mtblAccount(db).findOne({
-                        where: { UserID: body.userID }
+                    let history = await mtblHistoryReviewVideo(db).findOne({
+                        where: {
+                            UserID: body.userID,
+                            VideoID: body.videoID
+                        }
                     })
-                    await mtblAccount(db).update({
-                        Score: pastAccount.Score + 1,
-                    }, {
-                        where: { UserID: body.userID }
-                    })
+                    if (!history) {
+                        let pastAccount = await mtblAccount(db).findOne({
+                            where: { UserID: body.userID }
+                        })
+                        await mtblAccount(db).update({
+                            Score: pastAccount.Score + 1,
+                        }, {
+                            where: { UserID: body.userID }
+                        })
+                    }
                     var result = {
                         status: Constant.STATUS.SUCCESS,
                         message: Constant.MESSAGE.ACTION_SUCCESS,
