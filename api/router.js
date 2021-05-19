@@ -19,6 +19,7 @@ module.exports = function (app) {
 
     var accountManager = require('./controllers/ctl-tblAccount')
     app.route('/add_tbl_account').post(accountManager.addtblAccount);
+    app.route('/get_detail_tbl_account').post(accountManager.detailtblAccount);
     app.route('/update_tbl_account').post(accountManager.updatetblAccount);
     app.route('/delete_tbl_account').post(accountManager.deletetblAccount);
     app.route('/get_list_tbl_account').post(accountManager.getListtblAccount);

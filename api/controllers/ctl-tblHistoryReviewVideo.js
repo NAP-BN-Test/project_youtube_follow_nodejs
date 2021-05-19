@@ -38,22 +38,51 @@ module.exports = {
                             UserID: body.userID ? body.userID : null,
                             ReviewDate: now,
                         }).then(data => {
-                            var result = {
-                                status: Constant.STATUS.SUCCESS,
-                                message: Constant.MESSAGE.ACTION_SUCCESS,
-                            }
-                            res.json(result);
+
                         })
                     else {
                         await mtblHistoryReviewVideo(db).update({
                             ReviewDate: now,
                         }, { where: { ID: history.ID } })
+                    }
+                    mtblHistoryReviewVideo(db).findAll({
+                        offset: 0,
+                        limit: 10,
+                        where: { UserID: body.userID },
+                        order: [
+                            ['ReviewDate', 'DESC']
+                        ],
+                    }).then(async data => {
+                        var array = [];
+                        let stt = 1;
+
+                        for (var history = 0; history < data.length; history++) {
+                            let videoDetail = await mtblVideoManager(db).findOne({
+                                where: { VideoID: data[history].VideoID }
+                            })
+                            var obj = {
+                                stt: stt,
+                                id: Number(data[history].ID),
+                                videoID: data[history].VideoID ? data[history].VideoID : '',
+                                nameVideo: videoDetail.Name ? videoDetail.Name : '',
+                                title: videoDetail.Title ? videoDetail.Title : '',
+                                description: videoDetail.Description ? videoDetail.Description : '',
+                                linkImage: videoDetail.LinkImage ? videoDetail.LinkImage : '',
+                                userID: data[history].UserID ? data[history].UserID : '',
+                            }
+                            array.push(obj);
+                            stt += 1;
+                        }
+                        var count = await mtblHistoryReviewVideo(db).count({ UserID: body.userID })
+
                         var result = {
+                            array: array,
                             status: Constant.STATUS.SUCCESS,
                             message: Constant.MESSAGE.ACTION_SUCCESS,
+                            all: count
                         }
                         res.json(result);
-                    }
+                    })
                 } catch (error) {
                     console.log(error);
                     res.json(Result.SYS_ERROR_RESULT)
@@ -171,9 +200,6 @@ module.exports = {
                             let videoDetail = await mtblVideoManager(db).findOne({
                                 where: { VideoID: data[history].VideoID }
                             })
-                            let userDetail = await mtblAccount(db).findOne({
-                                where: { UserID: data[history].UserID }
-                            })
                             var obj = {
                                 stt: stt,
                                 id: Number(data[history].ID),
@@ -183,13 +209,11 @@ module.exports = {
                                 description: videoDetail.Description ? videoDetail.Description : '',
                                 linkImage: videoDetail.LinkImage ? videoDetail.LinkImage : '',
                                 userID: data[history].UserID ? data[history].UserID : '',
-                                // userName: userDetail.UserName ? userDetail.UserName : '',
-                                // permission: userDetail.Permission ? userDetail.Permission : '',
                             }
                             array.push(obj);
                             stt += 1;
                         }
-                        var count = await mtblHistoryReviewVideo(db).count({ where: whereOjb, })
+                        var count = await mtblHistoryReviewVideo(db).count({ UserID: body.userID })
                         var result = {
                             array: array,
                             status: Constant.STATUS.SUCCESS,

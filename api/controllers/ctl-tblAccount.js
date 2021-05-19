@@ -28,11 +28,15 @@ module.exports = {
                     mtblAccount(db).findOne({ where: { ID: body.id } }).then(data => {
                         if (data) {
                             var obj = {
-                                id: data.ID,
-                                userName: data.UserName,
-                                password: data.Password,
-                                permission: data.Name,
-                                active: data.Active,
+                                id: Number(data.ID),
+                                userName: data.UserName ? data.UserName : '',
+                                password: data.Password ? data.Password : '',
+                                permission: data.Permission ? data.Permission : '',
+                                Active: data.Active ? data.Active : '',
+                                userID: data.UserID ? data.UserID : '',
+                                name: data.Name ? data.Name : '',
+                                email: data.Email ? data.Email : '',
+                                urlImage: data.UrlImage ? data.UrlImage : '',
                             }
                             var result = {
                                 obj: obj,
@@ -301,22 +305,25 @@ module.exports = {
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
-                    let history = await mtblHistoryReviewVideo(db).findOne({
-                        where: {
-                            UserID: body.userID,
-                            VideoID: body.videoID
-                        }
+                    // let history = await mtblHistoryReviewVideo(db).findOne({
+                    //     where: {
+                    //         UserID: body.userID,
+                    //         VideoID: body.videoID
+                    //     }
+                    // })
+                    // if (!history) {
+                    let pastAccount = await mtblAccount(db).findOne({
+                        where: { ID: body.userID }
                     })
-                    if (!history) {
-                        let pastAccount = await mtblAccount(db).findOne({
-                            where: { UserID: body.userID }
-                        })
+                    if (pastAccount) {
                         await mtblAccount(db).update({
                             Score: pastAccount.Score + 1,
                         }, {
-                            where: { UserID: body.userID }
+                            where: { ID: body.userID }
                         })
                     }
+
+                    // }
                     var result = {
                         status: Constant.STATUS.SUCCESS,
                         message: Constant.MESSAGE.ACTION_SUCCESS,
