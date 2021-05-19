@@ -245,6 +245,7 @@ module.exports = {
                                 name: element.Name ? element.Name : '',
                                 email: element.Email ? element.Email : '',
                                 urlImage: element.UrlImage ? element.UrlImage : '',
+                                score: element.Score ? element.Score : 0,
                             }
                             array.push(obj);
                             stt += 1;
@@ -326,6 +327,10 @@ module.exports = {
 
                     // }
                     var result = {
+                        obj: {
+                            Score: pastAccount.Score + 1,
+
+                        },
                         status: Constant.STATUS.SUCCESS,
                         message: Constant.MESSAGE.ACTION_SUCCESS,
                     }
