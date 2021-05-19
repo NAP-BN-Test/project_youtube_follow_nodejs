@@ -37,6 +37,7 @@ module.exports = {
                                 name: data.Name ? data.Name : '',
                                 email: data.Email ? data.Email : '',
                                 urlImage: data.UrlImage ? data.UrlImage : '',
+                                score: data.Score ? data.Score : 0,
                             }
                             var result = {
                                 obj: obj,
