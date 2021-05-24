@@ -9,7 +9,8 @@ module.exports = function(db) {
         },
         UserID: Sequelize.STRING,
         VideoID: Sequelize.STRING,
-        ReviewDate: Sequelize.NOW
+        ReviewDate: Sequelize.NOW,
+        UserViews: Sequelize.INTEGER,
     });
 
     return table;

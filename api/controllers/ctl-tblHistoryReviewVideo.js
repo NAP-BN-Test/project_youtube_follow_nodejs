@@ -32,20 +32,21 @@ module.exports = {
                             UserID: body.userID,
                         }
                     })
-                    if (!history)
+                    if (!history) {
                         mtblHistoryReviewVideo(db).create({
                             VideoID: body.videoID ? body.videoID : null,
                             UserID: body.userID ? body.userID : null,
                             ReviewDate: now,
-                        }).then(data => {
-
+                            UserViews: 1
                         })
-                    else {
+                    } else {
+                        let userViews = (history.UserViews ? history.UserViews : 1)
                         await mtblHistoryReviewVideo(db).update({
                             ReviewDate: now,
+                            UserViews: userViews + 1
                         }, { where: { ID: history.ID } })
                     }
-                    mtblHistoryReviewVideo(db).findAll({
+                    await mtblHistoryReviewVideo(db).findAll({
                         offset: 0,
                         limit: 10,
                         where: { UserID: body.userID },
@@ -55,7 +56,7 @@ module.exports = {
                     }).then(async data => {
                         var array = [];
                         let stt = 1;
-
+                        console.log(data.length);
                         for (var history = 0; history < data.length; history++) {
                             let videoDetail = await mtblVideoManager(db).findOne({
                                 where: { VideoID: data[history].VideoID }
@@ -64,10 +65,11 @@ module.exports = {
                                 stt: stt,
                                 id: Number(data[history].ID),
                                 videoID: data[history].VideoID ? data[history].VideoID : '',
-                                nameVideo: videoDetail.Name ? videoDetail.Name : '',
-                                title: videoDetail.Title ? videoDetail.Title : '',
-                                description: videoDetail.Description ? videoDetail.Description : '',
-                                linkImage: videoDetail.LinkImage ? videoDetail.LinkImage : '',
+                                userViews: data[history].UserViews ? data[history].UserViews : 0,
+                                nameVideo: videoDetail ? videoDetail.Name ? videoDetail.Name : '' : '',
+                                title: videoDetail ? videoDetail.Title ? videoDetail.Title : '' : '',
+                                description: videoDetail ? videoDetail.Description ? videoDetail.Description : '' : '',
+                                linkImage: videoDetail ? videoDetail.LinkImage ? videoDetail.LinkImage : '' : '',
                                 userID: data[history].UserID ? data[history].UserID : '',
                             }
                             array.push(obj);
@@ -144,7 +146,6 @@ module.exports = {
     // get_history_review_video_of_staff
     getHistoryReviewVideoOfStaff: (req, res) => {
         let body = req.body;
-        console.log(body);
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
@@ -204,11 +205,12 @@ module.exports = {
                                 stt: stt,
                                 id: Number(data[history].ID),
                                 videoID: data[history].VideoID ? data[history].VideoID : '',
-                                nameVideo: videoDetail.Name ? videoDetail.Name : '',
-                                title: videoDetail.Title ? videoDetail.Title : '',
-                                description: videoDetail.Description ? videoDetail.Description : '',
-                                linkImage: videoDetail.LinkImage ? videoDetail.LinkImage : '',
+                                nameVideo: videoDetail ? videoDetail.Name ? videoDetail.Name : '' : '',
+                                title: videoDetail ? videoDetail.Title ? videoDetail.Title : '' : '',
+                                description: videoDetail ? videoDetail.Description ? videoDetail.Description : '' : '',
+                                linkImage: videoDetail ? videoDetail.LinkImage ? videoDetail.LinkImage : '' : '',
                                 userID: data[history].UserID ? data[history].UserID : '',
+                                userViews: data[history].UserViews ? data[history].UserViews : 1,
                             }
                             array.push(obj);
                             stt += 1;
