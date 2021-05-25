@@ -1,4 +1,4 @@
-module.exports = function (app) {
+module.exports = function(app) {
     // var checkToken = require('./constants/token');
     var youtube = require('./controllers/youtube');
     var uploadFile = require('./controllers/upload-file');
@@ -44,6 +44,7 @@ module.exports = function (app) {
     var historyReviewVideo = require('./controllers/ctl-tblHistoryReviewVideo')
     app.route('/add_tbl_history_review_video').post(historyReviewVideo.addtblHistoryReviewVideo);
     app.route('/get_history_review_video_of_staff').post(historyReviewVideo.getHistoryReviewVideoOfStaff);
+    app.route('/get_history_review_video_for_admin').post(historyReviewVideo.getHistoryReviewVideoForAdmin);
 
 
 }

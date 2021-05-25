@@ -21,7 +21,6 @@ module.exports = {
     // add_tbl_history_review_video
     addtblHistoryReviewVideo: (req, res) => {
         let body = req.body;
-        console.log(body);
         let now = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
         database.connectDatabase().then(async db => {
             if (db) {
@@ -32,18 +31,23 @@ module.exports = {
                             UserID: body.userID,
                         }
                     })
+                    let videoTitle = await mtblVideoManager(db).findOne({
+                        where: { VideoID: body.videoID }
+                    })
                     if (!history) {
                         mtblHistoryReviewVideo(db).create({
                             VideoID: body.videoID ? body.videoID : null,
                             UserID: body.userID ? body.userID : null,
                             ReviewDate: now,
-                            UserViews: 1
+                            UserViews: 1,
+                            VideoTitle: videoTitle.Title,
                         })
                     } else {
                         let userViews = (history.UserViews ? history.UserViews : 1)
                         await mtblHistoryReviewVideo(db).update({
                             ReviewDate: now,
-                            UserViews: userViews + 1
+                            UserViews: userViews + 1,
+                            VideoTitle: videoTitle.Title,
                         }, { where: { ID: history.ID } })
                     }
                     await mtblHistoryReviewVideo(db).findAll({
@@ -194,6 +198,99 @@ module.exports = {
                         where: { UserID: body.userID },
                         order: [
                             ['ReviewDate', 'DESC']
+                        ],
+                    }).then(async data => {
+                        var array = [];
+                        for (var history = 0; history < data.length; history++) {
+                            let videoDetail = await mtblVideoManager(db).findOne({
+                                where: { VideoID: data[history].VideoID }
+                            })
+                            var obj = {
+                                stt: stt,
+                                id: Number(data[history].ID),
+                                videoID: data[history].VideoID ? data[history].VideoID : '',
+                                nameVideo: videoDetail ? videoDetail.Name ? videoDetail.Name : '' : '',
+                                title: videoDetail ? videoDetail.Title ? videoDetail.Title : '' : '',
+                                description: videoDetail ? videoDetail.Description ? videoDetail.Description : '' : '',
+                                linkImage: videoDetail ? videoDetail.LinkImage ? videoDetail.LinkImage : '' : '',
+                                userID: data[history].UserID ? data[history].UserID : '',
+                                userViews: data[history].UserViews ? data[history].UserViews : 1,
+                                reviewDate: data[history].ReviewDate ? data[history].ReviewDate : null,
+                            }
+                            array.push(obj);
+                            stt += 1;
+                        }
+                        var count = await mtblHistoryReviewVideo(db).count({ UserID: body.userID })
+                        var result = {
+                            array: array,
+                            status: Constant.STATUS.SUCCESS,
+                            message: Constant.MESSAGE.ACTION_SUCCESS,
+                            all: count
+                        }
+                        res.json(result);
+                    })
+
+                } catch (error) {
+                    console.log(error);
+                    res.json(Result.SYS_ERROR_RESULT)
+                }
+            } else {
+                res.json(Constant.MESSAGE.USER_FAIL)
+            }
+        })
+    },
+    // get_history_review_video_for_admin
+    getHistoryReviewVideoForAdmin: (req, res) => {
+        let body = req.body;
+        database.connectDatabase().then(async db => {
+            if (db) {
+                try {
+                    var whereOjb = [];
+                    // if (body.dataSearch) {
+                    //     var data = JSON.parse(body.dataSearch)
+
+                    //     if (data.search) {
+                    //         where = [
+                    //             { FullName: { [Op.like]: '%' + data.search + '%' } },
+                    //             { Address: { [Op.like]: '%' + data.search + '%' } },
+                    //             { CMND: { [Op.like]: '%' + data.search + '%' } },
+                    //             { EmployeeCode: { [Op.like]: '%' + data.search + '%' } },
+                    //         ];
+                    //     } else {
+                    //         where = [
+                    //             { FullName: { [Op.ne]: '%%' } },
+                    //         ];
+                    //     }
+                    //     whereOjb = {
+                    //         [Op.and]: [{ [Op.or]: where }],
+                    //         [Op.or]: [{ ID: { [Op.ne]: null } }],
+                    //     };
+                    //     if (data.items) {
+                    //         for (var i = 0; i < data.items.length; i++) {
+                    //             let userFind = {};
+                    //             if (data.items[i].fields['name'] === 'HỌ VÀ TÊN') {
+                    //                 userFind['FullName'] = { [Op.like]: '%' + data.items[i]['searchFields'] + '%' }
+                    //                 if (data.items[i].conditionFields['name'] == 'And') {
+                    //                     whereOjb[Op.and].push(userFind)
+                    //                 }
+                    //                 if (data.items[i].conditionFields['name'] == 'Or') {
+                    //                     whereOjb[Op.or].push(userFind)
+                    //                 }
+                    //                 if (data.items[i].conditionFields['name'] == 'Not') {
+                    //                     whereOjb[Op.not] = userFind
+                    //                 }
+                    //             }
+                    //         }
+                    //     }
+                    // }
+                    let stt = 1;
+                    mtblHistoryReviewVideo(db).findAll({
+                        offset: 10 * (Number(body.page) - 1),
+                        limit: 10,
+                        where: { UserID: body.userID },
+                        order: [
+                            ['UserViews', 'DESC'],
+                            ['VideoTitle', 'DESC']
                         ],
                     }).then(async data => {
                         var array = [];

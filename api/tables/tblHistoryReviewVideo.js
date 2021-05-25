@@ -11,6 +11,7 @@ module.exports = function(db) {
         VideoID: Sequelize.STRING,
         ReviewDate: Sequelize.NOW,
         UserViews: Sequelize.INTEGER,
+        VideoTitle: Sequelize.STRING,
     });
 
     return table;
