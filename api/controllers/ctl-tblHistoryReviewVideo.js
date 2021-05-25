@@ -191,14 +191,22 @@ module.exports = {
                     //         }
                     //     }
                     // }
+                    let arrayOrder = []
+                    if (body.type == 'admin')
+                        arrayOrder = [
+                            ['UserViews', 'DESC'],
+                            ['VideoTitle', 'DESC']
+                        ]
+                    else
+                        arrayOrder = [
+                            ['ReviewDate', 'DESC']
+                        ]
                     let stt = 1;
                     mtblHistoryReviewVideo(db).findAll({
                         offset: 10 * (Number(body.page) - 1),
                         limit: 10,
                         where: { UserID: body.userID },
-                        order: [
-                            ['ReviewDate', 'DESC']
-                        ],
+                        order: arrayOrder,
                     }).then(async data => {
                         var array = [];
                         for (var history = 0; history < data.length; history++) {
