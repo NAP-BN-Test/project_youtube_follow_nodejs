@@ -211,6 +211,7 @@ module.exports = {
                                 linkImage: videoDetail ? videoDetail.LinkImage ? videoDetail.LinkImage : '' : '',
                                 userID: data[history].UserID ? data[history].UserID : '',
                                 userViews: data[history].UserViews ? data[history].UserViews : 1,
+                                reviewDate: data[history].ReviewDate ? data[history].ReviewDate : null,
                             }
                             array.push(obj);
                             stt += 1;
