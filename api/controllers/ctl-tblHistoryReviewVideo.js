@@ -39,14 +39,12 @@ module.exports = {
                             VideoID: body.videoID ? body.videoID : null,
                             UserID: body.userID ? body.userID : null,
                             ReviewDate: now,
-                            UserViews: 1,
+                            UserViews: 0,
                             VideoTitle: videoTitle.Title,
                         })
                     } else {
-                        let userViews = (history.UserViews ? history.UserViews : 1)
                         await mtblHistoryReviewVideo(db).update({
                             ReviewDate: now,
-                            UserViews: userViews + 1,
                             VideoTitle: videoTitle.Title,
                         }, { where: { ID: history.ID } })
                     }

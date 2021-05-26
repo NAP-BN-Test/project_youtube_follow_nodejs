@@ -307,13 +307,25 @@ module.exports = {
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
-                    // let history = await mtblHistoryReviewVideo(db).findOne({
-                    //     where: {
-                    //         UserID: body.userID,
-                    //         VideoID: body.videoID
-                    //     }
-                    // })
-                    // if (!history) {
+                    let history = await mtblHistoryReviewVideo(db).findOne({
+                        where: {
+                            UserID: body.userID,
+                            VideoID: body.videoID
+                        }
+                    })
+                    if (!history) {
+                        await mtblHistoryReviewVideo(db).update({
+                            UserViews: 1
+                        }, {
+                            where: { ID: history.ID }
+                        })
+                    } else {
+                        await mtblHistoryReviewVideo(db).update({
+                            UserViews: history.UserViews + 1
+                        }, {
+                            where: { ID: history.ID }
+                        })
+                    }
                     let pastAccount = await mtblAccount(db).findOne({
                         where: { ID: body.userID }
                     })
@@ -324,8 +336,6 @@ module.exports = {
                             where: { ID: body.userID }
                         })
                     }
-
-                    // }
                     var result = {
                         obj: {
                             Score: pastAccount.Score + 1,
