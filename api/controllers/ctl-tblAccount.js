@@ -313,13 +313,7 @@ module.exports = {
                             VideoID: body.videoID
                         }
                     })
-                    if (!history) {
-                        await mtblHistoryReviewVideo(db).update({
-                            UserViews: 1
-                        }, {
-                            where: { ID: history.ID }
-                        })
-                    } else {
+                    if (history) {
                         await mtblHistoryReviewVideo(db).update({
                             UserViews: history.UserViews + 1
                         }, {
@@ -343,6 +337,48 @@ module.exports = {
                         },
                         status: Constant.STATUS.SUCCESS,
                         message: Constant.MESSAGE.ACTION_SUCCESS,
+                    }
+                    res.json(result);
+                } catch (error) {
+                    console.log(error);
+                    res.json(Result.SYS_ERROR_RESULT)
+                }
+            } else {
+                res.json(Constant.MESSAGE.USER_FAIL)
+            }
+        })
+    },
+    // minus_points_of_staff
+    minusPointsOfStaff: (req, res) => {
+        let body = req.body;
+        database.connectDatabase().then(async db => {
+            if (db) {
+                try {
+                    let pastAccount = await mtblAccount(db).findOne({
+                        where: { ID: body.userID }
+                    })
+                    if (pastAccount && body.score) {
+                        if (Number(body.score) < pastAccount.Score) {
+                            await mtblAccount(db).update({
+                                Score: pastAccount.Score - Number(body.score),
+                            }, {
+                                where: { ID: body.userID }
+                            })
+                            var result = {
+                                obj: {
+                                    Score: pastAccount.Score + 1,
+                                },
+                                status: Constant.STATUS.SUCCESS,
+                                message: Constant.MESSAGE.ACTION_SUCCESS,
+                            }
+                        } else {
+                            var result = {
+                                obj: {},
+                                status: Constant.STATUS.FAIL,
+                                message: '',
+                            }
+                        }
+
                     }
                     res.json(result);
                 } catch (error) {

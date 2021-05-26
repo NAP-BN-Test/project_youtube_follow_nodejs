@@ -24,6 +24,7 @@ module.exports = function(app) {
     app.route('/delete_tbl_account').post(accountManager.deletetblAccount);
     app.route('/get_list_tbl_account').post(accountManager.getListtblAccount);
     app.route('/plus_score_for_staff').post(accountManager.plusScoreForStaff);
+    app.route('/minus_points_of_staff').post(accountManager.minusPointsOfStaff);
 
     var videoManager = require('./controllers/ctl-tblVideoManager')
     app.route('/add_tbl_video_manager').post(videoManager.addtblVideoManager);
