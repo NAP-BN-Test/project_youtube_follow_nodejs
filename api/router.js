@@ -25,6 +25,7 @@ module.exports = function(app) {
     app.route('/get_list_tbl_account').post(accountManager.getListtblAccount);
     app.route('/plus_score_for_staff').post(accountManager.plusScoreForStaff);
     app.route('/minus_points_of_staff').post(accountManager.minusPointsOfStaff);
+    app.route('/change_notification_status').post(accountManager.changeNotificationStatus);
 
     var videoManager = require('./controllers/ctl-tblVideoManager')
     app.route('/add_tbl_video_manager').post(videoManager.addtblVideoManager);
