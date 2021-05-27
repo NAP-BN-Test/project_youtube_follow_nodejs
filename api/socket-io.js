@@ -12,6 +12,9 @@ module.exports = {
         let tblNotification = mtblNotification(db);
         tblNotification.belongsTo(mtblAccount(db), { foreignKey: 'UserID', sourceKey: 'UserID', as: 'user' })
         await tblNotification.findAll({
+            where: {
+                Status: false
+            },
             order: [
                 ['ID', 'DESC']
             ],
@@ -38,6 +41,9 @@ module.exports = {
                 let tblNotification = mtblNotification(db);
                 tblNotification.belongsTo(mtblAccount(db), { foreignKey: 'UserID', sourceKey: 'UserID', as: 'user' })
                 await tblNotification.findAll({
+                    where: {
+                        Status: false
+                    },
                     order: [
                         ['ID', 'DESC']
                     ],
