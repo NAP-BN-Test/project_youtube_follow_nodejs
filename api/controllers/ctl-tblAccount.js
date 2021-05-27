@@ -333,8 +333,7 @@ module.exports = {
                     }
                     var result = {
                         obj: {
-                            Score: pastAccount.Score + 1,
-
+                            score: pastAccount.Score + 1,
                         },
                         status: Constant.STATUS.SUCCESS,
                         message: Constant.MESSAGE.ACTION_SUCCESS,
@@ -359,7 +358,7 @@ module.exports = {
                         where: { ID: body.userID }
                     })
                     if (pastAccount && body.score) {
-                        if (Number(body.score) < pastAccount.Score) {
+                        if (Number(body.score) <= pastAccount.Score) {
                             await mtblNotification(db).create({
                                 UserID: body.userID,
                                 Status: false,
@@ -372,7 +371,7 @@ module.exports = {
                             })
                             var result = {
                                 obj: {
-                                    Score: pastAccount.Score + 1,
+                                    score: pastAccount.Score + 1,
                                 },
                                 status: Constant.STATUS.SUCCESS,
                                 message: Constant.MESSAGE.ACTION_SUCCESS,
@@ -381,7 +380,7 @@ module.exports = {
                             var result = {
                                 obj: {},
                                 status: Constant.STATUS.FAIL,
-                                message: '',
+                                message: 'Invalid redemption points',
                             }
                         }
 
