@@ -403,7 +403,13 @@ module.exports = {
                 try {
                     await mtblNotification(db).update({
                         Status: true
-                    }, { where: { ID: body.id } })
+                    }, {
+                        where: {
+                            ID: {
+                                [Op.ne]: null
+                            }
+                        }
+                    })
                     var result = {
                         status: Constant.STATUS.SUCCESS,
                         message: Constant.MESSAGE.ACTION_SUCCESS,

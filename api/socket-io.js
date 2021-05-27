@@ -26,7 +26,7 @@ module.exports = {
         }).then(data => {
             data.forEach(element => {
                 arraySocket.push({
-                    id: Number(element),
+                    id: Number(element.ID),
                     userID: element.UserID ? element.UserID : null,
                     userName: element.UserID ? element.user.Name ? element.user.Name : '' : '',
                     email: element.UserID ? element.user.Email ? element.user.Email : '' : '',
@@ -55,7 +55,7 @@ module.exports = {
                 }).then(data => {
                     data.forEach(element => {
                         array.push({
-                            id: Number(element),
+                            id: Number(element.ID),
                             userID: element.UserID ? element.UserID : null,
                             userName: element.UserID ? element.user.Name ? element.user.Name : '' : '',
                             email: element.UserID ? element.user.Email ? element.user.Email : '' : '',
