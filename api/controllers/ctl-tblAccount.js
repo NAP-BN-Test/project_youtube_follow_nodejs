@@ -401,9 +401,16 @@ module.exports = {
         database.connectDatabase().then(async db => {
             if (db) {
                 try {
-                    await mtblNotification(db).update({
-                        Status: true
-                    }, {
+                    // await mtblNotification(db).update({
+                    //     Status: true
+                    // }, {
+                    //     where: {
+                    //         ID: {
+                    //             [Op.ne]: null
+                    //         }
+                    //     }
+                    // })
+                    await mtblNotification(db).destroy({
                         where: {
                             ID: {
                                 [Op.ne]: null

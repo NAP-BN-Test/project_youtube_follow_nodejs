@@ -63,8 +63,10 @@ module.exports = {
                         })
                     });
                 })
+                console.log(array);
                 io.sockets.emit("withdrawal-notice-score", array);
             });
+            console.log(arraySocket, 'arraySocket');
             socket.emit("withdrawal-notice-score", arraySocket);
         })
     }
