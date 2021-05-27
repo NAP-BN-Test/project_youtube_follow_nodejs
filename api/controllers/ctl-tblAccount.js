@@ -412,9 +412,7 @@ module.exports = {
                     // })
                     await mtblNotification(db).destroy({
                         where: {
-                            ID: {
-                                [Op.ne]: null
-                            }
+                            ID: body.id
                         }
                     })
                     var result = {
