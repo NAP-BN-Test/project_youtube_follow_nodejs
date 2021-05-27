@@ -5,6 +5,7 @@ var moment = require('moment');
 var mtblAccount = require('../tables/tblAccount')
 var database = require('../database');
 var mtblHistoryReviewVideo = require('../tables/tblHistoryReviewVideo')
+var mtblNotification = require('../tables/tblNotification')
 
 async function deleteRelationshiptblAccount(db, listID) {
     await mtblAccount(db).destroy({
@@ -359,6 +360,11 @@ module.exports = {
                     })
                     if (pastAccount && body.score) {
                         if (Number(body.score) < pastAccount.Score) {
+                            await mtblNotification(db).create({
+                                UserID: body.userID,
+                                Status: false,
+                                Score: body.score
+                            })
                             await mtblAccount(db).update({
                                 Score: pastAccount.Score - Number(body.score),
                             }, {
